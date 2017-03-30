@@ -1,0 +1,47 @@
+--------------------------------- DEVICES
+
+
+
+-------------------------------- FILESYS
+
+
+
+-------------------------------- LIB
+
+
+
+
+-------------------------------- MISC
+
+
+
+
+------------------------------- THREADS
+a) flags
+b) init
+c) interrrupt
+d) intr-stubs
+e) io
+f) loader
+g) make.vars
+h) makefile
+i) malloc
+j) palloc
+k) pte
+l) start
+m) switch
+n) synch
+o) thread
+p) vaddr
+
+------------------------------- USERPROG
+
+
+
+
+------------------------------- UTILS
+
+
+
+
+------------------------------- VM
