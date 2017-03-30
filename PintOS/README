@@ -3,7 +3,8 @@
 
 
 -------------------------------- FILESYS
-(wagner)
+Contiene el código fuente de los archivos básicos del sistema. Usted podrá utilizar este archivo del sistema iniciando con el proyecto 2, pero no lo podrá modificar hasta el proyecto 4.
+
 
 
 -------------------------------- LIB
