@@ -1,47 +1,48 @@
 --------------------------------- DEVICES
-
+(gilb)
 
 
 -------------------------------- FILESYS
-
+(wagner)
 
 
 -------------------------------- LIB
-
+(gilb)
 
 
 
 -------------------------------- MISC
-
+(wagner)
 
 
 
 ------------------------------- THREADS
-a) flags
-b) init
-c) interrrupt
-d) intr-stubs
-e) io
-f) loader
-g) make.vars
-h) makefile
-i) malloc
-j) palloc
-k) pte
-l) start
-m) switch
-n) synch
-o) thread
-p) vaddr
+a) flags (gilb)
+b) init (wagner)
+c) interrrupt (gilb)
+d) intr-stubs (wagner)
+e) io (gilb)
+f) loader (wagner)
+g) make.vars (gilb)
+h) makefile (wagner)
+i) malloc (gilb)
+j) palloc (wagner)
+k) pte (gilb)
+l) start (wagner)
+m) switch (gilb)
+n) synch (wagner)
+o) thread (gilb)
+p) vaddr (wagner)
 
 ------------------------------- USERPROG
-
+(gilb)
 
 
 
 ------------------------------- UTILS
-
+(wagner)
 
 
 
 ------------------------------- VM
+(gilb)
