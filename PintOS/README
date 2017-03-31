@@ -3,7 +3,7 @@
 
 
 -------------------------------- FILESYS
-Contiene el código fuente de los archivos básicos del sistema. Usted podrá utilizar este archivo del sistema iniciando con el proyecto 2, pero no lo podrá modificar hasta el proyecto 4.
+Contiene el código fuente de los archivos básicos del sistema.
 
 
 
@@ -13,27 +13,28 @@ Contiene el código fuente de los archivos básicos del sistema. Usted podrá ut
 
 
 -------------------------------- MISC
-(wagner)
+Estos archivos pueden ayudar en caso que se decida intentar a trabajar con PintOS en su propia máquina.
 
 
 
 ------------------------------- THREADS
+Esta carpeta contiene el código fuente para la base del kernel.
 a) flags (gilb)
-b) init (wagner)
+b) init: inicializa el kernel, tiene incluido el 'main()'
 c) interrrupt (gilb)
-d) intr-stubs (wagner)
+d) intr-stubs: ensambla el código a bajo nivel para el manejo de interrupciones.
 e) io (gilb)
-f) loader (wagner)
-g) make.vars (gilb)
-h) makefile (wagner)
-i) malloc (gilb)
-j) palloc (wagner)
-k) pte (gilb)
-l) start (wagner)
-m) switch (gilb)
-n) synch (wagner)
-o) thread (gilb)
-p) vaddr (wagner)
+g) kernel.lds: contiene el script para enlazar el kernel. Estabalece la dirección de lectura del kernel y gestiona para 'start-S' para que esté cercano al inicio de la imagen del kernel. Podría no necesitarse modificar este código, a no ser por curiosidad.
+h) loader: el "kernel loader" se encarga de ensamblar en los 512 bytes de código y datos que el PC BIOS carga en la memoria y encuentra según el turno correspondiente el kernel en el disco, lo carga en memoria y hace un salto hacia start() que se encuentra en 'start.S'.
+i) make.vars (gilb)
+j) malloc (gilb)
+k) palloc: acrónimo de 'page allocator' (asignador de páginas), el cual se encarga de repartir la memoria del sistema en páginas cuyo tamaño es múltiplo de 4 kB.
+l) pte (gilb)
+m) start: realiza la configuración básica necesaria para la protección de memoria y operaciones en 32 bits en los CPU's 80x86. A diferencia del "loader", este código forma parte del kernel.
+n) switch (gilb)
+o) synch: contiene las primitivas básicas de sincronización: semáforos, bloqueos, variables condicionales y barreras de optimización. 
+p) thread (gilb)
+q) vaddr: contiene funciones y macros para trabajar con direcciones virtuales y las entradas de la tabla de páginas.
 
 ------------------------------- USERPROG
 (gilb)
