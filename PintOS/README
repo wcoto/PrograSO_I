@@ -28,7 +28,7 @@ c) interrrupt: se encarga del manejo de interrupciones como funciones de activar
 d) intr-stubs (wagner)
 e) io: contiene funciones para el acceso de al puerto de inputs y outputs, principalmente utilizado por directorio de "device"
 f) loader (wagner)
-g) make.vars (gilb)
+g) make.vars: habilita funcionalidad de memoria virtual.
 h) makefile (wagner)
 i) malloc: aqui se encuentra declarado  el "block allocator", puede asignar bloques de cualquier tamano.
 j) palloc (wagner)
