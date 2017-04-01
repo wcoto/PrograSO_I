@@ -4,7 +4,7 @@ temporizador, disco, entre otros.
 
 
 -------------------------------- FILESYS
-Contiene el código fuente de los archivos básicos del sistema. Usted podrá utilizar este archivo del sistema iniciando con el proyecto 2, pero no lo podrá modificar hasta el proyecto 4.
+Contiene el código fuente de los archivos básicos del sistema.
 
 
 
@@ -17,27 +17,29 @@ consiste en "user"  donde se ubican las aplicaciones de usuario.
 
 
 -------------------------------- MISC
-(wagner)
+Estos archivos pueden ayudar en caso que se decida intentar a trabajar con PintOS en su propia máquina.
 
 
 
 ------------------------------- THREADS
-a) flags: Define bits en el registro de flags del 80x86.
-b) init (wagner)
-c) interrrupt: se encarga del manejo de interrupciones como funciones de activar o desactivar interrupciones.
-d) intr-stubs (wagner)
+Esta carpeta contiene el código fuente para la base del kernel.
+a) flags Define bits en el registro de flags del 80x86.
+b) init: inicializa el kernel, tiene incluido el 'main()'
+c) interrrupt se encarga del manejo de interrupciones como funciones de activar o desactivar interrupciones.
+d) intr-stubs: ensambla el código a bajo nivel para el manejo de interrupciones.
 e) io: contiene funciones para el acceso de al puerto de inputs y outputs, principalmente utilizado por directorio de "device"
-f) loader (wagner)
-g) make.vars: habilita funcionalidad de memoria virtual.
-h) makefile (wagner)
-i) malloc: aqui se encuentra declarado  el "block allocator", puede asignar bloques de cualquier tamano.
-j) palloc (wagner)
-k) pte: funcioes y macros para trabajar con direcciones virtuales.
-l) start (wagner)
-m) switch: utilizado para cambiar threads.
-n) synch (wagner)
-o) thread: basicamente es el soporte de threads, aqui se encuentra declarado la estructura de datos para los threads.
-p) vaddr (wagner)
+g) kernel.lds: contiene el script para enlazar el kernel. Estabalece la dirección de lectura del kernel y gestiona para 'start-S' para que esté cercano al inicio de la imagen del kernel. Podría no necesitarse modificar este código, a no ser por curiosidad.
+h) loader: el "kernel loader" se encarga de ensamblar en los 512 bytes de código y datos que el PC BIOS carga en la memoria y encuentra según el turno correspondiente el kernel en el disco, lo carga en memoria y hace un salto hacia start() que se encuentra en 'start.S'.
+i) make.vars :  habilita funcionalidad de memoria virtual.
+j) malloc :  aqui se encuentra declarado  el "block allocator", puede asignar bloques de cualquier tamano.
+k) palloc: acrónimo de 'page allocator' (asignador de páginas), el cual se encarga de repartir la memoria del sistema en páginas cuyo tamaño es múltiplo de 4 kB.
+l) pte: funcioes y macros para trabajar con direcciones virtuales.
+m) start: realiza la configuración básica necesaria para la protección de memoria y operaciones en 32 bits en los CPU's 80x86. A diferencia del "loader", este código forma parte del kernel.
+n) switch : utilizado para cambiar threads.
+o) synch: contiene las primitivas básicas de sincronización: semáforos, bloqueos, variables condicionales y barreras de optimización. 
+p) thread: basicamente es el soporte de threads, aqui se encuentra declarado la estructura de datos para los threads.
+q) vaddr: contiene funciones y macros para trabajar con direcciones virtuales y las entradas de la tabla de páginas.
+
 
 ------------------------------- USERPROG
 Se encuentra el codigo fuente del cargador del user program.
