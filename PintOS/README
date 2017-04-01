@@ -4,7 +4,8 @@ temporizador, disco, entre otros.
 
 
 -------------------------------- FILESYS
-(wagner)
+Contiene el código fuente de los archivos básicos del sistema. Usted podrá utilizar este archivo del sistema iniciando con el proyecto 2, pero no lo podrá modificar hasta el proyecto 4.
+
 
 
 -------------------------------- LIB
@@ -29,7 +30,7 @@ e) io: contiene funciones para el acceso de al puerto de inputs y outputs, princ
 f) loader (wagner)
 g) make.vars (gilb)
 h) makefile (wagner)
-i) malloc: aqui se encuentra declarado el "block allocator", puede asignar bloques de cualquier tamano.
+i) malloc: aqui se encuentra declarado  el "block allocator", puede asignar bloques de cualquier tamano.
 j) palloc (wagner)
 k) pte: funcioes y macros para trabajar con direcciones virtuales.
 l) start (wagner)
@@ -44,10 +45,11 @@ Se encuentra el codigo fuente del cargador del user program.
 
 
 ------------------------------- UTILS
-(wagner)
+Estos archivos son útiles en caso que usted desee iniciar a trabajar con PintOS en su propia máquina, de otra manera, los puede ignorar.
 
 
 
 ------------------------------- VM
 Basicamente es un directorio vacío, en el cual esta destinado para implementacion de
 memoria virtual
+
