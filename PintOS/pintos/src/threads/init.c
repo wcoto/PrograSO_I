@@ -254,8 +254,10 @@ parse_options (char **argv)
 #endif
       else if (!strcmp (name, "-rs"))
         random_init (atoi (value));
-      else if (!strcmp (name, "-mlfqs"))
+      else if (!strcmp (name, "-mlfqs")){
+        printf("entramos aqui");
         thread_mlfqs = true;
+      }
 #ifdef USERPROG
       else if (!strcmp (name, "-ul"))
         user_page_limit = atoi (value);
