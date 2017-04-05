@@ -255,7 +255,15 @@ parse_options (char **argv)
       else if (!strcmp (name, "-rs"))
         random_init (atoi (value));
       else if (!strcmp (name, "-mlfqs")){
-        printf("entramos aqui");
+        if (!strcmp(value,"fcfs")){
+		printf("\nAlgoritmo  First Come First Serve\n\n");
+	}else if (!strcmp(value,"colas")){
+		printf("\nAlgoritmo  Colas Multinivel\n\n");
+	}else if (!strcmp(value,"sjf")){
+		printf("\nAlgoritmo  Short Job First\n\n");
+	}else if (!strcmp(value,"rr")){
+		printf("\nAlgoritmo  Round Robin\n\n");
+	}
         thread_mlfqs = true;
       }
 #ifdef USERPROG
