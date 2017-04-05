@@ -11,6 +11,9 @@ include ../../tests/Make.tests
 # Compiler and assembler options.
 kernel.bin: CPPFLAGS += -I$(SRCDIR)/lib/kernel
 
+# Pruebas mias
+wag_SRC += wag/hola.c
+
 # Core kernel.
 threads_SRC  = threads/start.S		# Startup code.
 threads_SRC += threads/init.c		# Main program.
