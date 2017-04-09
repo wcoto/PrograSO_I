@@ -67,6 +67,7 @@ static unsigned thread_ticks;   /* # of timer ticks since last yield. */
    If true, use multi-level feedback queue scheduler.
    Controlled by kernel command-line option "-o mlfqs". */
 bool thread_mlfqs;
+int scheduler_type;
 
 static void kernel_thread (thread_func *, void *aux);
 
@@ -594,3 +595,10 @@ allocate_tid (void)
 /* Offset of `stack' member within `struct thread'.
    Used by switch.S, which can't figure it out on its own. */
 uint32_t thread_stack_ofs = offsetof (struct thread, stack);
+
+int
+thread_scheduler(void)
+{
+    printf("calendarizador de hilos");
+    return scheduler_type;
+}
