@@ -128,7 +128,7 @@ main (void)
 #endif
 
   printf ("Boot complete....\n");
-  printf("El tipo es: %i", thread_scheduler());
+  printf("El tipo es: %i", thread_scheduler_type());
   
   /* Run actions specified on kernel command line. */
   run_actions (argv);

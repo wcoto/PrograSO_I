@@ -110,6 +110,15 @@ struct thread
    If true, use multi-level feedback queue scheduler.
    Controlled by kernel command-line option "-o mlfqs". */
 extern bool thread_mlfqs;
+
+
+/* Variable for scheduler type
+
+    1: First Come First Serve
+    2: Multi-Level Feedback Queue
+    3: Short Job First
+    4: Round Robin
+*/
 extern int  scheduler_type;
 
 void thread_init (void);
@@ -143,7 +152,7 @@ void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
-
-int thread_scheduler(void);
+/* Returns the scheduler type */
+int thread_scheduler_type(void);
 
 #endif /* threads/thread.h */

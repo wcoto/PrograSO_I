@@ -596,8 +596,10 @@ allocate_tid (void)
    Used by switch.S, which can't figure it out on its own. */
 uint32_t thread_stack_ofs = offsetof (struct thread, stack);
 
+
+/* Returns the scheduler type */
 int
-thread_scheduler(void)
+thread_scheduler_type(void)
 {
     printf("calendarizador de hilos");
     return scheduler_type;
