@@ -151,8 +151,11 @@ int thread_get_nice (void);
 void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
+void set_thread_executionTime(int);
+int  get_thread_executionTime(void);
 
 /* Returns the scheduler type */
 int thread_scheduler_type(void);
+
 
 #endif /* threads/thread.h */

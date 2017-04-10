@@ -174,7 +174,7 @@ thread_print_stats (void)
    Priority scheduling is the goal of Problem 1-3. */
 tid_t
 thread_create (const char *name, int priority,
-               thread_func *function, void *aux) 
+               thread_func *function, void *aux)
 {
   struct thread *t;
   struct kernel_thread_frame *kf;
@@ -393,6 +393,17 @@ thread_get_recent_cpu (void)
   /* Not yet implemented. */
   return 0;
 }
+
+/* Sets the current thread's execution time value */
+void set_thread_executionTime(int pExecutiontime)
+{
+    thread_current ()->executionTime = pExecutiontime;
+}
+
+/* Gets the current thread's execution time value */
+int  get_thread_executionTime(void){
+    return thread_current()->executionTime;
+}
 
 /* Idle thread.  Executes when no other thread is ready to run.
 
@@ -601,6 +612,9 @@ uint32_t thread_stack_ofs = offsetof (struct thread, stack);
 int
 thread_scheduler_type(void)
 {
-    printf("calendarizador de hilos");
+    set_thread_executionTime(25);
+    printf("\nTiempo de ejecucion: %i\n", get_thread_executionTime());
+
+    printf("Calendarizador de hilos\n");
     return scheduler_type;
 }
