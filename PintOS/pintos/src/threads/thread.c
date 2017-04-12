@@ -81,6 +81,8 @@ static void schedule (void);
 void thread_schedule_tail (struct thread *prev);
 static tid_t allocate_tid (void);
 
+static void fcfs(void);
+
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can't work in
    general and it is possible in this case only because loader.S
@@ -125,6 +127,9 @@ thread_start (void)
 
   /* Wait for the idle thread to initialize idle_thread. */
   sema_down (&idle_started);
+
+  // hilos
+  fcfs();
 }
 
 /* Called by the timer interrupt handler at each timer tick.
@@ -612,9 +617,36 @@ uint32_t thread_stack_ofs = offsetof (struct thread, stack);
 int
 thread_scheduler_type(void)
 {
+    switch (scheduler_type) {
+        case 1:
+            printf("Scheduler: First Come First Serve\n");
+            break;
+        case 2:
+            printf("Scheduler: Multilevel Queue\n");
+            break;
+        case 3:
+            printf("Scheduler: Short Job First\n");
+            break;
+        case 4:
+            printf("Scheduler: Round Robin\n");
+            break;
+        default:
+            break;
+    }
     set_thread_executionTime(25);
     printf("\nTiempo de ejecucion: %i\n", get_thread_executionTime());
 
     printf("Calendarizador de hilos\n");
     return scheduler_type;
+}
+
+static void
+fcfs (void)
+{
+    for (int i = 0; i < 10; i++) {
+        char string[]="hilo_";
+        char cated_string[10];
+        snprintf(cated_string,10,"%s%d",string,i);
+        printf("%s\n",cated_string);
+    }
 }
