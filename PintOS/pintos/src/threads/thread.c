@@ -281,6 +281,7 @@ thread_create_time (const char *name, int priority,
   /* Add to run queue. */
   thread_unblock (t);
 
+  orderByTime();
   return tid;
 }
 
@@ -736,6 +737,7 @@ fcfs (void)
 static void
 sjf (void)
 {
+    ASSERT (scheduler_type == 3)
     printf("\nEjecucion sjf\n");
     char string[]="hilo_";
     char string_result[11];
@@ -751,5 +753,13 @@ static void
 threads (void *aux UNUSED){
     printf ("Hilo ejecutado: %s\n", thread_name());
     printf ("La prioridad del hilo es: %d\n", thread_get_priority());
-    printf ("El tiempo de ejecucion es: %d\n\n", thread_get_executionTime());
+    printf ("El tiempo de ejecucion es: %d\n", thread_get_executionTime());
+    printf ("La cantidad de hilos es: %i\n\n", list_size(&ready_list));
+}
+
+
+void
+orderByTime(void)
+{
+    printf("Ordenación de la lista de 'ready' para sjf: %i\n", list_size(&ready_list));
 }

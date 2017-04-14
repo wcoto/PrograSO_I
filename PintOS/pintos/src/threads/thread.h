@@ -159,5 +159,5 @@ int thread_scheduler_type(void);
 
 /* Time Threads */
 tid_t thread_create_time (const char *name, int priority, thread_func *, void *, int time);
-
+void orderByTime(void);
 #endif /* threads/thread.h */
