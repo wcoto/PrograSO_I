@@ -134,8 +134,9 @@ thread_start (void)
   sema_down (&idle_started);
 
   // hilos
-  fcfs();
-    //sjf();
+  thread_scheduler_type();
+  //fcfs();
+  //sjf();
 }
 
 /* Called by the timer interrupt handler at each timer tick.
@@ -695,18 +696,20 @@ uint32_t thread_stack_ofs = offsetof (struct thread, stack);
 
 
 /* Returns the scheduler type */
-int
+void
 thread_scheduler_type(void)
 {
     switch (scheduler_type) {
         case 1:
             printf("Scheduler: First Come First Serve\n");
+            fcfs();
             break;
         case 2:
             printf("Scheduler: Multilevel Queue\n");
             break;
         case 3:
             printf("Scheduler: Short Job First\n");
+            sjf();
             break;
         case 4:
             printf("Scheduler: Round Robin\n");
@@ -729,7 +732,7 @@ fcfs (void)
     char string[]="hilo_";
     char string_result[10];
     for (int i = 0; i < 10; i++) {
-        int priority = PRI_DEFAULT - (i + 5) % 10 - 1;
+        int priority = PRI_DEFAULT + (int) random_ulong() % 10;
         snprintf(string_result,10,"%s%d",string,i);
         thread_create(string_result, priority, threads, NULL);
     }
@@ -743,19 +746,20 @@ sjf (void)
     char string[]="hilo_";
     char string_result[11];
     for (int i = 10; i < 20; i++) {
-        int time = PRI_DEFAULT + (i + 5) % 10 + 1;
+        int time = 1 + (int) random_ulong() % 10;
+        time = (time > 0) ? time : time * -1;
         snprintf(string_result,10,"%s%d",string,i);
-        thread_create_time(string_result, i, threads, NULL, time);
+        thread_create_time(string_result, 0, threads, NULL, time);
     }
 }
 
 
 static void
 threads (void *aux UNUSED){
-    printf ("Hilo ejecutado: %s\n", thread_name());
-    printf ("La prioridad del hilo es: %d\n", thread_get_priority());
-    printf ("El tiempo de ejecucion es: %d\n", thread_get_executionTime());
-    printf ("La cantidad de hilos es: %i\n\n", list_size(&ready_list));
+    printf ("Hilo: %s\t", thread_name());
+    printf ("Prioridad: %d\t", thread_get_priority());
+    printf ("Tiempo: %d\t", thread_get_executionTime());
+    printf ("Total: %i\n\n", list_size(&ready_list));
 }
 
 

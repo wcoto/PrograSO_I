@@ -155,7 +155,7 @@ void thread_set_executionTime(int);
 int  thread_get_executionTime(void);
 
 /* Returns the scheduler type */
-int thread_scheduler_type(void);
+void thread_scheduler_type(void);
 
 /* Time Threads */
 tid_t thread_create_time (const char *name, int priority, thread_func *, void *, int time);
