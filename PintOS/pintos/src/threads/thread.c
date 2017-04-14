@@ -67,6 +67,8 @@ static unsigned thread_ticks;   /* # of timer ticks since last yield. */
    If true, use multi-level feedback queue scheduler.
    Controlled by kernel command-line option "-o mlfqs". */
 bool thread_mlfqs;
+
+/* Variable global para el tipo de calendarizador */
 int scheduler_type;
 
 static void kernel_thread (thread_func *, void *aux);
@@ -75,6 +77,7 @@ static void idle (void *aux UNUSED);
 static struct thread *running_thread (void);
 static struct thread *next_thread_to_run (void);
 static void init_thread (struct thread *, const char *name, int priority);
+static void init_thread_time (struct thread *, const char *name, int priority, int time);
 static bool is_thread (struct thread *) UNUSED;
 static void *alloc_frame (struct thread *, size_t size);
 static void schedule (void);
@@ -82,6 +85,8 @@ void thread_schedule_tail (struct thread *prev);
 static tid_t allocate_tid (void);
 
 static void fcfs(void);
+static void sjf(void);
+static void threads(void *aux UNUSED);
 
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can't work in
@@ -129,7 +134,8 @@ thread_start (void)
   sema_down (&idle_started);
 
   // hilos
-  fcfs();
+  //fcfs();
+    sjf();
 }
 
 /* Called by the timer interrupt handler at each timer tick.
@@ -201,7 +207,58 @@ thread_create (const char *name, int priority,
 
   /* Prepare thread for first run by initializing its stack.
      Do this atomically so intermediate values for the 'stack' 
-     member cannot be observed. */
+     member cannot be observed. 3/7/4 */
+  old_level = intr_disable ();
+
+  /* Stack frame for kernel_thread(). */
+  kf = alloc_frame (t, sizeof *kf);
+  kf->eip = NULL;
+  kf->function = function;
+  kf->aux = aux;
+
+  /* Stack frame for switch_entry(). */
+  ef = alloc_frame (t, sizeof *ef);
+  ef->eip = (void (*) (void)) kernel_thread;
+
+  /* Stack frame for switch_threads(). */
+  sf = alloc_frame (t, sizeof *sf);
+  sf->eip = switch_entry;
+  sf->ebp = 0;
+
+  intr_set_level (old_level);
+
+  /* Add to run queue. */
+  thread_unblock (t);
+
+  return tid;
+}
+
+/* Hilos con tiempo */
+tid_t
+thread_create_time (const char *name, int priority,
+               thread_func *function, void *aux, int time)
+{
+  struct thread *t;
+  struct kernel_thread_frame *kf;
+  struct switch_entry_frame *ef;
+  struct switch_threads_frame *sf;
+  tid_t tid;
+  enum intr_level old_level;
+
+  ASSERT (function != NULL);
+
+  /* Allocate thread. */
+  t = palloc_get_page (PAL_ZERO);
+  if (t == NULL)
+    return TID_ERROR;
+
+  /* Initialize thread. */
+  init_thread_time (t, name, priority, time);
+  tid = t->tid = allocate_tid ();
+
+  /* Prepare thread for first run by initializing its stack.
+     Do this atomically so intermediate values for the 'stack'
+     member cannot be observed. 3/7/4 */
   old_level = intr_disable ();
 
   /* Stack frame for kernel_thread(). */
@@ -400,13 +457,13 @@ thread_get_recent_cpu (void)
 }
 
 /* Sets the current thread's execution time value */
-void set_thread_executionTime(int pExecutiontime)
+void thread_set_executionTime(int pExecutiontime)
 {
     thread_current ()->executionTime = pExecutiontime;
 }
 
 /* Gets the current thread's execution time value */
-int  get_thread_executionTime(void){
+int  thread_get_executionTime(void){
     return thread_current()->executionTime;
 }
 
@@ -498,6 +555,24 @@ init_thread (struct thread *t, const char *name, int priority)
   list_push_back (&all_list, &t->allelem);
 }
 
+/* Init con tiempo */
+static void
+init_thread_time (struct thread *t, const char *name, int priority, int time)
+{
+  ASSERT (t != NULL);
+  ASSERT (PRI_MIN <= priority && priority <= PRI_MAX);
+  ASSERT (name != NULL);
+
+  memset (t, 0, sizeof *t);
+  t->status = THREAD_BLOCKED;
+  strlcpy (t->name, name, sizeof t->name);
+  t->stack = (uint8_t *) t + PGSIZE;
+  t->priority = priority;
+  t->executionTime = time;
+  t->magic = THREAD_MAGIC;
+  list_push_back (&all_list, &t->allelem);
+}
+
 /* Allocates a SIZE-byte frame at the top of thread T's stack and
    returns a pointer to the frame's base. */
 static void *
@@ -521,8 +596,13 @@ next_thread_to_run (void)
 {
   if (list_empty (&ready_list))
     return idle_thread;
+  else if (scheduler_type == 4) {
+      struct thread *t = list_begin(&ready_list);
+      list_push_back (&ready_list, &t->elem);
+      return list_entry (list_pop_front (&ready_list), struct thread, elem);
+  }
   else
-    return list_entry (list_pop_front (&ready_list), struct thread, elem);
+      return list_entry (list_pop_front (&ready_list), struct thread, elem);
 }
 
 /* Completes a thread switch by activating the new thread's page
@@ -633,8 +713,8 @@ thread_scheduler_type(void)
         default:
             break;
     }
-    set_thread_executionTime(25);
-    printf("\nTiempo de ejecucion: %i\n", get_thread_executionTime());
+    thread_set_executionTime(25);
+    printf("\nTiempo de ejecucion: %i\n", thread_get_executionTime());
 
     printf("Calendarizador de hilos\n");
     return scheduler_type;
@@ -643,10 +723,33 @@ thread_scheduler_type(void)
 static void
 fcfs (void)
 {
+    printf("\nEjecucion fcfs\n");
+    char string[]="hilo_";
+    char string_result[10];
     for (int i = 0; i < 10; i++) {
-        char string[]="hilo_";
-        char cated_string[10];
-        snprintf(cated_string,10,"%s%d",string,i);
-        printf("%s\n",cated_string);
+        int priority = PRI_DEFAULT - (i + 5) % 10 - 1;
+        snprintf(string_result,10,"%s%d",string,i);
+        thread_create(string_result, priority, threads, NULL);
     }
+}
+
+static void
+sjf (void)
+{
+    printf("\nEjecucion sjf\n");
+    char string[]="hilo_";
+    char string_result[11];
+    for (int i = 10; i < 20; i++) {
+        int time = PRI_DEFAULT + (i + 5) % 10 + 1;
+        snprintf(string_result,10,"%s%d",string,i);
+        thread_create_time(string_result, i, threads, NULL, time);
+    }
+}
+
+
+static void
+threads (void *aux UNUSED){
+    printf ("Hilo ejecutado: %s\n", thread_name());
+    printf ("La prioridad del hilo es: %d\n", thread_get_priority());
+    printf ("El tiempo de ejecucion es: %d\n\n", thread_get_executionTime());
 }
