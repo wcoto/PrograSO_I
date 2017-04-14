@@ -134,8 +134,8 @@ thread_start (void)
   sema_down (&idle_started);
 
   // hilos
-  //fcfs();
-    sjf();
+  fcfs();
+    //sjf();
 }
 
 /* Called by the timer interrupt handler at each timer tick.
@@ -724,6 +724,7 @@ thread_scheduler_type(void)
 static void
 fcfs (void)
 {
+    ASSERT(scheduler_type == 1);
     printf("\nEjecucion fcfs\n");
     char string[]="hilo_";
     char string_result[10];
