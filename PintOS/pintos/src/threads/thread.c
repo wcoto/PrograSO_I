@@ -601,6 +601,6 @@ uint32_t thread_stack_ofs = offsetof (struct thread, stack);
 int
 thread_scheduler_type(void)
 {
-    printf("calendarizador de hilos");
+    printf("\n---Calendarizador de hilos---\n");
     return scheduler_type;
 }
