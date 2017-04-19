@@ -67,6 +67,8 @@ static unsigned thread_ticks;   /* # of timer ticks since last yield. */
    If true, use multi-level feedback queue scheduler.
    Controlled by kernel command-line option "-o mlfqs". */
 bool thread_mlfqs;
+
+/* Variable global para el tipo de calendarizador */
 int scheduler_type;
 
 static void kernel_thread (thread_func *, void *aux);
@@ -75,11 +77,19 @@ static void idle (void *aux UNUSED);
 static struct thread *running_thread (void);
 static struct thread *next_thread_to_run (void);
 static void init_thread (struct thread *, const char *name, int priority);
+static void init_thread_time (struct thread *, const char *name, int priority, int time);
 static bool is_thread (struct thread *) UNUSED;
 static void *alloc_frame (struct thread *, size_t size);
 static void schedule (void);
 void thread_schedule_tail (struct thread *prev);
 static tid_t allocate_tid (void);
+
+static void fcfs(void);
+static void sjf(void);
+static void threads(void *aux UNUSED);
+
+/* less */
+static bool time_less (const struct list_elem *a_, const struct list_elem *b_, void *aux UNUSED);
 
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can't work in
@@ -125,6 +135,11 @@ thread_start (void)
 
   /* Wait for the idle thread to initialize idle_thread. */
   sema_down (&idle_started);
+
+  // hilos
+  thread_scheduler_type();
+  //fcfs();
+  //sjf();
 }
 
 /* Called by the timer interrupt handler at each timer tick.
@@ -174,7 +189,7 @@ thread_print_stats (void)
    Priority scheduling is the goal of Problem 1-3. */
 tid_t
 thread_create (const char *name, int priority,
-               thread_func *function, void *aux) 
+               thread_func *function, void *aux)
 {
   struct thread *t;
   struct kernel_thread_frame *kf;
@@ -196,7 +211,7 @@ thread_create (const char *name, int priority,
 
   /* Prepare thread for first run by initializing its stack.
      Do this atomically so intermediate values for the 'stack' 
-     member cannot be observed. */
+     member cannot be observed. 3/7/4 */
   old_level = intr_disable ();
 
   /* Stack frame for kernel_thread(). */
@@ -219,6 +234,58 @@ thread_create (const char *name, int priority,
   /* Add to run queue. */
   thread_unblock (t);
 
+  return tid;
+}
+
+/* Hilos con tiempo */
+tid_t
+thread_create_time (const char *name, int priority,
+               thread_func *function, void *aux, int time)
+{
+  struct thread *t;
+  struct kernel_thread_frame *kf;
+  struct switch_entry_frame *ef;
+  struct switch_threads_frame *sf;
+  tid_t tid;
+  enum intr_level old_level;
+
+  ASSERT (function != NULL);
+
+  /* Allocate thread. */
+  t = palloc_get_page (PAL_ZERO);
+  if (t == NULL)
+    return TID_ERROR;
+
+  /* Initialize thread. */
+  init_thread_time (t, name, priority, time);
+  tid = t->tid = allocate_tid ();
+
+  /* Prepare thread for first run by initializing its stack.
+     Do this atomically so intermediate values for the 'stack'
+     member cannot be observed. 3/7/4 */
+  old_level = intr_disable ();
+
+  /* Stack frame for kernel_thread(). */
+  kf = alloc_frame (t, sizeof *kf);
+  kf->eip = NULL;
+  kf->function = function;
+  kf->aux = aux;
+
+  /* Stack frame for switch_entry(). */
+  ef = alloc_frame (t, sizeof *ef);
+  ef->eip = (void (*) (void)) kernel_thread;
+
+  /* Stack frame for switch_threads(). */
+  sf = alloc_frame (t, sizeof *sf);
+  sf->eip = switch_entry;
+  sf->ebp = 0;
+
+  intr_set_level (old_level);
+
+  /* Add to run queue. */
+  thread_unblock_time (t);
+
+  //orderByTime();
   return tid;
 }
 
@@ -256,6 +323,23 @@ thread_unblock (struct thread *t)
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
   list_push_back (&ready_list, &t->elem);
+  t->status = THREAD_READY;
+  intr_set_level (old_level);
+}
+
+/* */
+void
+thread_unblock_time (struct thread *t)
+{
+  printf("\n\ndesde tres\n\n");
+  enum intr_level old_level;
+
+  ASSERT (is_thread (t));
+
+  old_level = intr_disable ();
+  ASSERT (t->status == THREAD_BLOCKED);
+  //list_push_back (&ready_list, &t->elem);
+  list_insert_ordered(&ready_list, &t->elem, time_less, NULL);
   t->status = THREAD_READY;
   intr_set_level (old_level);
 }
@@ -393,6 +477,17 @@ thread_get_recent_cpu (void)
   /* Not yet implemented. */
   return 0;
 }
+
+/* Sets the current thread's execution time value */
+void thread_set_executionTime(int pExecutiontime)
+{
+    thread_current ()->executionTime = pExecutiontime;
+}
+
+/* Gets the current thread's execution time value */
+int  thread_get_executionTime(void){
+    return thread_current()->executionTime;
+}
 
 /* Idle thread.  Executes when no other thread is ready to run.
 
@@ -482,6 +577,24 @@ init_thread (struct thread *t, const char *name, int priority)
   list_push_back (&all_list, &t->allelem);
 }
 
+/* Init con tiempo */
+static void
+init_thread_time (struct thread *t, const char *name, int priority, int time)
+{
+  ASSERT (t != NULL);
+  ASSERT (PRI_MIN <= priority && priority <= PRI_MAX);
+  ASSERT (name != NULL);
+
+  memset (t, 0, sizeof *t);
+  t->status = THREAD_BLOCKED;
+  strlcpy (t->name, name, sizeof t->name);
+  t->stack = (uint8_t *) t + PGSIZE;
+  t->priority = priority;
+  t->executionTime = time;
+  t->magic = THREAD_MAGIC;
+  list_push_back (&all_list, &t->allelem);
+}
+
 /* Allocates a SIZE-byte frame at the top of thread T's stack and
    returns a pointer to the frame's base. */
 static void *
@@ -505,8 +618,13 @@ next_thread_to_run (void)
 {
   if (list_empty (&ready_list))
     return idle_thread;
+//  else if (scheduler_type == 4) {
+//      struct thread *t = list_begin(&ready_list);
+//      list_push_back (&ready_list, &t->elem);
+//      return list_entry (list_pop_front (&ready_list), struct thread, elem);
+//  }
   else
-    return list_entry (list_pop_front (&ready_list), struct thread, elem);
+      return list_entry (list_pop_front (&ready_list), struct thread, elem);
 }
 
 /* Completes a thread switch by activating the new thread's page
@@ -598,9 +716,80 @@ uint32_t thread_stack_ofs = offsetof (struct thread, stack);
 
 
 /* Returns the scheduler type */
-int
+void
 thread_scheduler_type(void)
 {
-    printf("\n---Calendarizador de hilos---\n");
-    return scheduler_type;
+    switch (scheduler_type) {
+        case 1:
+            printf("Scheduler: First Come First Serve\n");
+            fcfs();
+            break;
+        case 2:
+            printf("Scheduler: Multilevel Queue\n");
+            break;
+        case 3:
+            printf("Scheduler: Short Job First\n");
+            sjf();
+            break;
+        case 4:
+            printf("Scheduler: Round Robin\n");
+            break;
+        default:
+            break;
+    }
+    thread_set_executionTime(25);
+    printf("\nTiempo de ejecucion: %i\n", thread_get_executionTime());
+
+    printf("Calendarizador de hilos\n");
+}
+
+static void
+fcfs (void)
+{
+    ASSERT(scheduler_type == 1);
+    printf("\nEjecucion fcfs\n");
+    char string[]="hilo_";
+    char string_result[10];
+    for (int i = 0; i < 10; i++) {
+        int priority = PRI_DEFAULT + (int) random_ulong() % 10;
+        snprintf(string_result,10,"%s%d",string,i);
+        thread_create(string_result, priority, threads, NULL);
+    }
+}
+
+static void
+sjf (void)
+{
+    ASSERT (scheduler_type == 3)
+    printf("\nEjecucion sjf\n");
+    char string[]="hilo_";
+    char string_result[11];
+    for (int i = 10; i < 20; i++) {
+        int time = 1 + (int) random_ulong() % 10;
+        time = (time > 0) ? time : time * -1;
+        snprintf(string_result,10,"%s%d",string,i);
+        thread_create_time(string_result, 0, threads, NULL, time);
+    }
+}
+
+
+static void
+threads (void *aux UNUSED){
+    printf ("Hilo: %s\t", thread_name());
+    printf ("Prioridad: %d\t", thread_get_priority());
+    printf ("Tiempo: %d\t", thread_get_executionTime());
+    printf ("Total: %i\n\n", list_size(&ready_list));
+}
+
+
+/* Returns true if time value A is less than value B, false
+   otherwise. */
+static bool
+time_less (const struct list_elem *a_, const struct list_elem *b_,
+            void *aux UNUSED)
+{
+  const struct thread *a = list_entry (a_, struct thread, elem);
+  const struct thread *b = list_entry (b_, struct thread, elem);
+
+  return a->executionTime < b->executionTime;
 }
