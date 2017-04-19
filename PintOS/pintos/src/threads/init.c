@@ -227,7 +227,7 @@ read_command_line (void)
 /* Parses options in ARGV[]
    and returns the first non-option argument. */
 static char **
-parse_options (char **argv) 
+main (char **argv) 
 {
   for (; *argv != NULL && **argv == '-'; argv++)
     {
@@ -241,18 +241,18 @@ parse_options (char **argv)
         shutdown_configure (SHUTDOWN_POWER_OFF);
       else if (!strcmp (name, "-r"))
         shutdown_configure (SHUTDOWN_REBOOT);
-#ifdef FILESYS
+    #ifdef FILESYS
       else if (!strcmp (name, "-f"))
         format_filesys = true;
       else if (!strcmp (name, "-filesys"))
         filesys_bdev_name = value;
       else if (!strcmp (name, "-scratch"))
         scratch_bdev_name = value;
-#ifdef VM
+    #ifdef VM
       else if (!strcmp (name, "-swap"))
         swap_bdev_name = value;
-#endif
-#endif
+    #endif
+    #endif
       else if (!strcmp (name, "-rs"))
         random_init (atoi (value));
       else if (!strcmp (name, "-mlfqs")){
@@ -267,10 +267,10 @@ parse_options (char **argv)
 	}
         //thread_mlfqs = true;
       }
-#ifdef USERPROG
-      else if (!strcmp (name, "-ul"))
-        user_page_limit = atoi (value);
-#endif
+      #ifdef USERPROG
+        else if (!strcmp (name, "-ul"))
+          user_page_limit = atoi (value);
+      #endif
       else
         PANIC ("unknown option `%s' (use -h for help)", name);
     }
