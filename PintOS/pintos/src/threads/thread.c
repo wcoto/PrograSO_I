@@ -88,6 +88,9 @@ static void fcfs(void);
 static void sjf(void);
 static void threads(void *aux UNUSED);
 
+/* less */
+static bool time_less (const struct list_elem *a_, const struct list_elem *b_, void *aux UNUSED);
+
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can't work in
    general and it is possible in this case only because loader.S
@@ -280,9 +283,9 @@ thread_create_time (const char *name, int priority,
   intr_set_level (old_level);
 
   /* Add to run queue. */
-  thread_unblock (t);
+  thread_unblock_time (t);
 
-  orderByTime();
+  //orderByTime();
   return tid;
 }
 
@@ -320,6 +323,23 @@ thread_unblock (struct thread *t)
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
   list_push_back (&ready_list, &t->elem);
+  t->status = THREAD_READY;
+  intr_set_level (old_level);
+}
+
+/* */
+void
+thread_unblock_time (struct thread *t)
+{
+  printf("\n\ndesde tres\n\n");
+  enum intr_level old_level;
+
+  ASSERT (is_thread (t));
+
+  old_level = intr_disable ();
+  ASSERT (t->status == THREAD_BLOCKED);
+  //list_push_back (&ready_list, &t->elem);
+  list_insert_ordered(&ready_list, &t->elem, time_less, NULL);
   t->status = THREAD_READY;
   intr_set_level (old_level);
 }
@@ -598,11 +618,11 @@ next_thread_to_run (void)
 {
   if (list_empty (&ready_list))
     return idle_thread;
-  else if (scheduler_type == 4) {
-      struct thread *t = list_begin(&ready_list);
-      list_push_back (&ready_list, &t->elem);
-      return list_entry (list_pop_front (&ready_list), struct thread, elem);
-  }
+//  else if (scheduler_type == 4) {
+//      struct thread *t = list_begin(&ready_list);
+//      list_push_back (&ready_list, &t->elem);
+//      return list_entry (list_pop_front (&ready_list), struct thread, elem);
+//  }
   else
       return list_entry (list_pop_front (&ready_list), struct thread, elem);
 }
@@ -721,7 +741,6 @@ thread_scheduler_type(void)
     printf("\nTiempo de ejecucion: %i\n", thread_get_executionTime());
 
     printf("Calendarizador de hilos\n");
-    return scheduler_type;
 }
 
 static void
@@ -763,8 +782,14 @@ threads (void *aux UNUSED){
 }
 
 
-void
-orderByTime(void)
+/* Returns true if time value A is less than value B, false
+   otherwise. */
+static bool
+time_less (const struct list_elem *a_, const struct list_elem *b_,
+            void *aux UNUSED)
 {
-    printf("Ordenación de la lista de 'ready' para sjf: %i\n", list_size(&ready_list));
+  const struct thread *a = list_entry (a_, struct thread, elem);
+  const struct thread *b = list_entry (b_, struct thread, elem);
+
+  return a->executionTime < b->executionTime;
 }
