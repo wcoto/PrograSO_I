@@ -331,7 +331,6 @@ thread_unblock (struct thread *t)
 void
 thread_unblock_time (struct thread *t)
 {
-  printf("\n\ndesde tres\n\n");
   enum intr_level old_level;
 
   ASSERT (is_thread (t));
@@ -721,33 +720,28 @@ thread_scheduler_type(void)
 {
     switch (scheduler_type) {
         case 1:
-            printf("Scheduler: First Come First Serve\n");
+            printf("\t\t\tScheduler: First Come First Serve\n");
             fcfs();
             break;
         case 2:
-            printf("Scheduler: Multilevel Queue\n");
+            printf("\t\t\tScheduler: Multilevel Queue\n");
             break;
         case 3:
-            printf("Scheduler: Short Job First\n");
+            printf("\t\t\tScheduler: Short Job First\n");
             sjf();
             break;
         case 4:
-            printf("Scheduler: Round Robin\n");
+            printf("\t\t\tScheduler: Round Robin\n");
             break;
         default:
             break;
     }
-    thread_set_executionTime(25);
-    printf("\nTiempo de ejecucion: %i\n", thread_get_executionTime());
-
-    printf("Calendarizador de hilos\n");
 }
 
 static void
 fcfs (void)
 {
     ASSERT(scheduler_type == 1);
-    printf("\nEjecucion fcfs\n");
     char string[]="hilo_";
     char string_result[10];
     for (int i = 0; i < 10; i++) {
@@ -761,7 +755,6 @@ static void
 sjf (void)
 {
     ASSERT (scheduler_type == 3)
-    printf("\nEjecucion sjf\n");
     char string[]="hilo_";
     char string_result[11];
     for (int i = 10; i < 20; i++) {
@@ -775,7 +768,7 @@ sjf (void)
 
 static void
 threads (void *aux UNUSED){
-    printf ("Hilo: %s\t", thread_name());
+    printf ("\nHilo: %s\t", thread_name());
     printf ("Prioridad: %d\t", thread_get_priority());
     printf ("Tiempo: %d\t", thread_get_executionTime());
     printf ("Total: %i\n\n", list_size(&ready_list));
