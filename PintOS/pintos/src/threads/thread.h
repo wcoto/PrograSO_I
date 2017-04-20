@@ -133,6 +133,7 @@ tid_t thread_create (const char *name, int priority, thread_func *, void *);
 void thread_block (void);
 void thread_unblock (struct thread *);
 void thread_unblock_time (struct thread *);
+void thread_unblock_queue(struct thread *);
 
 struct thread *thread_current (void);
 tid_t thread_tid (void);
@@ -160,5 +161,8 @@ void thread_scheduler_type(void);
 
 /* Time Threads */
 tid_t thread_create_time (const char *name, int priority, thread_func *, void *, int time);
-void orderByTime(void);
+
+/* Queue Threads */
+tid_t thread_create_queue (const char *name, int priority, thread_func *, void *);
+
 #endif /* threads/thread.h */

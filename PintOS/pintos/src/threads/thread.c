@@ -1,4 +1,4 @@
-/*
+﻿/*
 	Algorithms:
 			FCFS
 			Colas multinivel
@@ -86,6 +86,7 @@ static tid_t allocate_tid (void);
 
 static void fcfs(void);
 static void sjf(void);
+static void queue(void);
 static void threads(void *aux UNUSED);
 
 /* less */
@@ -138,8 +139,6 @@ thread_start (void)
 
   // hilos
   thread_scheduler_type();
-  //fcfs();
-  //sjf();
 }
 
 /* Called by the timer interrupt handler at each timer tick.
@@ -285,7 +284,57 @@ thread_create_time (const char *name, int priority,
   /* Add to run queue. */
   thread_unblock_time (t);
 
-  //orderByTime();
+  return tid;
+}
+
+/* Creates a thread by using the multilevel queue scheduler */
+tid_t
+thread_create_queue (const char *name, int priority,
+               thread_func *function, void *aux)
+{
+  struct thread *t;
+  struct kernel_thread_frame *kf;
+  struct switch_entry_frame *ef;
+  struct switch_threads_frame *sf;
+  tid_t tid;
+  enum intr_level old_level;
+
+  ASSERT (function != NULL);
+
+  /* Allocate thread. */
+  t = palloc_get_page (PAL_ZERO);
+  if (t == NULL)
+    return TID_ERROR;
+
+  /* Initialize thread. */
+  init_thread (t, name, priority);
+  tid = t->tid = allocate_tid ();
+
+  /* Prepare thread for first run by initializing its stack.
+     Do this atomically so intermediate values for the 'stack'
+     member cannot be observed. 3/7/4 */
+  old_level = intr_disable ();
+
+  /* Stack frame for kernel_thread(). */
+  kf = alloc_frame (t, sizeof *kf);
+  kf->eip = NULL;
+  kf->function = function;
+  kf->aux = aux;
+
+  /* Stack frame for switch_entry(). */
+  ef = alloc_frame (t, sizeof *ef);
+  ef->eip = (void (*) (void)) kernel_thread;
+
+  /* Stack frame for switch_threads(). */
+  sf = alloc_frame (t, sizeof *sf);
+  sf->eip = switch_entry;
+  sf->ebp = 0;
+
+  intr_set_level (old_level);
+
+  /* Add to run queue. */
+  thread_unblock_queue (t);
+
   return tid;
 }
 
@@ -327,7 +376,7 @@ thread_unblock (struct thread *t)
   intr_set_level (old_level);
 }
 
-/* */
+/* Thread unblock time */
 void
 thread_unblock_time (struct thread *t)
 {
@@ -337,10 +386,24 @@ thread_unblock_time (struct thread *t)
 
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
-  //list_push_back (&ready_list, &t->elem);
   list_insert_ordered(&ready_list, &t->elem, time_less, NULL);
   t->status = THREAD_READY;
   intr_set_level (old_level);
+}
+
+void
+thread_unblock_queue(struct thread *t)
+{
+    enum intr_level old_level;
+
+    ASSERT (is_thread (t));
+
+    old_level = intr_disable ();
+    ASSERT (t->status == THREAD_BLOCKED);
+    if(t->priority < 30)
+        list_push_back (&ready_list, &t->elem);
+    t->status = THREAD_READY;
+    intr_set_level (old_level);
 }
 
 /* Returns the name of the running thread. */
@@ -725,6 +788,7 @@ thread_scheduler_type(void)
             break;
         case 2:
             printf("\t\t\tScheduler: Multilevel Queue\n");
+            queue();
             break;
         case 3:
             printf("\t\t\tScheduler: Short Job First\n");
@@ -754,7 +818,7 @@ fcfs (void)
 static void
 sjf (void)
 {
-    ASSERT (scheduler_type == 3)
+    ASSERT (scheduler_type == 3);
     char string[]="hilo_";
     char string_result[11];
     for (int i = 10; i < 20; i++) {
@@ -762,6 +826,19 @@ sjf (void)
         time = (time > 0) ? time : time * -1;
         snprintf(string_result,10,"%s%d",string,i);
         thread_create_time(string_result, 0, threads, NULL, time);
+    }
+}
+
+static void
+queue()
+{
+    ASSERT (scheduler_type == 2);
+    char string[]="hilo_";
+    char string_result[10];
+    for (int i = 0; i < 10; i++) {
+        int priority = PRI_DEFAULT + (int) random_ulong() % 10;
+        snprintf(string_result,10,"%s%d",string,i);
+        thread_create_queue(string_result, priority, threads, NULL);
     }
 }
 
