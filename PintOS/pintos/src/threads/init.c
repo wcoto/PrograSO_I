@@ -274,6 +274,19 @@ parse_options (char **argv)
 	  		numThreads = atoi(value);
 	  		printf("\nDigito -t va1lor: %d \n",numThreads);
     	}
+    	else if(!strcmp (name, "-b")){			//tipo de hilo
+
+			if(atoi(value) == 0 || atoi(value)==1){
+				typeThread= value;
+				printf("-b: %s\n", value );
+			}else{
+				printf("\n-b solo acepta \"0\" y \"1\" \n");	
+				shutdown ();
+				thread_exit ();
+			}
+				
+			
+	    }
 
     	#ifdef USERPROG
     	else if (!strcmp (name, "-ul"))
@@ -286,7 +299,7 @@ parse_options (char **argv)
 	if(numThreads> 25){
 		printf("Error!\n tamano de los hilos debe ser maximo de 25\n\n");
 		shutdown ();
-		thread_exit ();
+		thread_exit ();	
 	}
 
   /* Initialize the random number generator based on the system
@@ -301,6 +314,14 @@ parse_options (char **argv)
   
   return argv;
 }
+
+
+// void 
+// run_End(char msj){
+// 	printf(msj);
+// 	shutdown ();
+// 	thread_exit ();
+// }
 
 /* Runs the task specified in ARGV[1]. */
 static void
