@@ -229,51 +229,65 @@ read_command_line (void)
 static char **
 parse_options (char **argv) 
 {
-  for (; *argv != NULL && **argv == '-'; argv++)
+	for (; *argv != NULL && **argv == '-'; argv++)
     {
-      char *save_ptr;
-      char *name = strtok_r (*argv, "=", &save_ptr);
-      char *value = strtok_r (NULL, "", &save_ptr);
+    	char *save_ptr;
+        char *name = strtok_r (*argv, "=", &save_ptr);
+        char *value = strtok_r (NULL, "", &save_ptr);
       
-      if (!strcmp (name, "-h"))
-        usage ();
-      else if (!strcmp (name, "-q"))
-        shutdown_configure (SHUTDOWN_POWER_OFF);
-      else if (!strcmp (name, "-r"))
-        shutdown_configure (SHUTDOWN_REBOOT);
-#ifdef FILESYS
-      else if (!strcmp (name, "-f"))
-        format_filesys = true;
-      else if (!strcmp (name, "-filesys"))
-        filesys_bdev_name = value;
-      else if (!strcmp (name, "-scratch"))
-        scratch_bdev_name = value;
-#ifdef VM
-      else if (!strcmp (name, "-swap"))
-        swap_bdev_name = value;
-#endif
-#endif
-      else if (!strcmp (name, "-rs"))
-        random_init (atoi (value));
-      else if (!strcmp (name, "-mlfqs")){
-        if (!strcmp(value,"fcfs")){
-                scheduler_type = 1;
-	}else if (!strcmp(value,"colas")){
-                scheduler_type = 2;
-	}else if (!strcmp(value,"sjf")){
-                scheduler_type = 3;
-	}else if (!strcmp(value,"rr")){
-                scheduler_type = 4;
-	}
-        thread_mlfqs = true;
-      }
-#ifdef USERPROG
-      else if (!strcmp (name, "-ul"))
-        user_page_limit = atoi (value);
-#endif
-      else
-        PANIC ("unknown option `%s' (use -h for help)", name);
+      	if (!strcmp (name, "-h"))
+        	usage ();
+      	else if (!strcmp (name, "-q"))
+        	shutdown_configure (SHUTDOWN_POWER_OFF);
+      	else if (!strcmp (name, "-r"))
+        	shutdown_configure (SHUTDOWN_REBOOT);
+		#ifdef FILESYS
+      	else if (!strcmp (name, "-f"))
+        	format_filesys = true;
+      	else if (!strcmp (name, "-filesys"))
+        	filesys_bdev_name = value;
+      	else if (!strcmp (name, "-scratch"))
+        	scratch_bdev_name = value;
+		#ifdef VM
+      	else if (!strcmp (name, "-swap"))
+        	swap_bdev_name = value;
+		#endif
+		#endif
+	    else if (!strcmp (name, "-rs"))
+	      	random_init (atoi (value));
+      	else if (!strcmp (name, "-mlfqs")){
+	        if (!strcmp(value,"fcfs")){
+	        	scheduler_type= 1;
+			}
+			else if (!strcmp(value,"colas")){
+	            scheduler_type = 2;
+			}else if (!strcmp(value,"sjf")){
+	            scheduler_type = 3;
+			}else if (!strcmp(value,"rr")){
+	            scheduler_type = 4;
+			}
+
+        	thread_mlfqs = true;
+
+      	}
+      	else if(!strcmp (name, "-t")){			//cantidad de hilos 
+	  		numThreads = atoi(value);
+	  		printf("\nDigito -t va1lor: %d \n",numThreads);
+    	}
+
+    	#ifdef USERPROG
+    	else if (!strcmp (name, "-ul"))
+        	// user_page_limit = atoi (value);
+		#endif
+    	else
+    	PANIC ("unknown option `%s' (use -h for help)", name);
     }
+
+	if(numThreads> 25){
+		printf("Error!\n tamano de los hilos debe ser maximo de 25\n\n");
+		shutdown ();
+		thread_exit ();
+	}
 
   /* Initialize the random number generator based on the system
      time.  This has no effect if an "-rs" option was specified.

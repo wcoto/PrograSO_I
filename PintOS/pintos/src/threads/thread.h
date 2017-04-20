@@ -120,6 +120,8 @@ extern bool thread_mlfqs;
     4: Round Robin
 */
 extern int  scheduler_type;
+extern int  numThreads;
+
 
 void thread_init (void);
 void thread_start (void);

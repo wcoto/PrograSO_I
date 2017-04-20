@@ -71,6 +71,9 @@ bool thread_mlfqs;
 /* Variable global para el tipo de calendarizador */
 int scheduler_type;
 
+/*variables para pruebas  */
+int numThreads;    
+
 static void kernel_thread (thread_func *, void *aux);
 
 static void idle (void *aux UNUSED);
