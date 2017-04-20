@@ -72,8 +72,8 @@ bool thread_mlfqs;
 int scheduler_type;
 
 /*variables para pruebas  */
-int numThreads;    
-int typeThread; //0: I/O bound, 1: CPU Bound
+int numThreads =25;    
+int typeThread ; //0: I/O bound, 1: CPU Bound
 int percent ;
 
 static void kernel_thread (thread_func *, void *aux);
@@ -812,9 +812,9 @@ fcfs (void)
 {
     ASSERT(scheduler_type == 1);
     char string[]="hilo_";
-    char string_result[10];
-    for (int i = 0; i < 10; i++) {
-        int priority = PRI_DEFAULT + (int) random_ulong() % 10;
+    char string_result[numThreads];
+    for (int i = 0; i < numThreads; i++) {
+        int priority = PRI_DEFAULT + (int) random_ulong() % numThreads;
         snprintf(string_result,10,"%s%d",string,i);
         thread_create(string_result, priority, threads, NULL);
     }
