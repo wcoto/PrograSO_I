@@ -127,7 +127,7 @@ main (void)
   filesys_init (format_filesys);
 #endif
 
-  printf ("Boot complete....\n");
+  printf ("Boot complete 5166625....\n");
   //printf("El tipo es: %i", thread_scheduler_type());
   
   /* Run actions specified on kernel command line. */
