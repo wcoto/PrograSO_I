@@ -839,9 +839,9 @@ queue()
 {
     ASSERT (scheduler_type == 2);
     char string[]="hilo_";
-    char string_result[10];
-    for (int i = 0; i < 10; i++) {
-        int priority = PRI_DEFAULT + (int) random_ulong() % 10;
+    char string_result[numThreads];
+    for (int i = 0; i < numThreads; i++) {
+        int priority = PRI_DEFAULT + (int) random_ulong() % numThreads;
         snprintf(string_result,10,"%s%d",string,i);
         thread_create_queue(string_result, priority, threads, NULL);
     }
