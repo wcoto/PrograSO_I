@@ -73,7 +73,8 @@ int scheduler_type;
 
 /*variables para pruebas  */
 int numThreads;    
-int typeThread = 0; //0: I/O bound, 1: CPU Bound
+int typeThread; //0: I/O bound, 1: CPU Bound
+int percent ;
 
 static void kernel_thread (thread_func *, void *aux);
 

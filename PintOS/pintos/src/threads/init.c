@@ -229,6 +229,9 @@ read_command_line (void)
 static char **
 parse_options (char **argv) 
 {
+	bool using_b= false;		//indica si el argumento typethread se ingreso para no permitir el uso del otro.
+	bool using_p = false;
+
 	for (; *argv != NULL && **argv == '-'; argv++)
     {
     	char *save_ptr;
@@ -275,7 +278,7 @@ parse_options (char **argv)
 	  		printf("\nDigito -t va1lor: %d \n",numThreads);
     	}
     	else if(!strcmp (name, "-b")){			//tipo de hilo
-
+    		using_b=true;
 			if(atoi(value) == 0 || atoi(value)==1){
 				typeThread= value;
 				printf("-b: %s\n", value );
@@ -286,6 +289,11 @@ parse_options (char **argv)
 			}
 				
 			
+	    }
+	    else if(!strcmp (name, "-p")){			//porcentaje del tipo de hilos
+			int percent = value;
+			printf("\nDigito -p valor: %s \n",value);
+			using_p = true;
 	    }
 
     	#ifdef USERPROG
@@ -298,6 +306,11 @@ parse_options (char **argv)
 
 	if(numThreads> 25){
 		printf("Error!\n tamano de los hilos debe ser maximo de 25\n\n");
+		shutdown ();
+		thread_exit ();	
+	}
+	if(using_p && using_b){
+		printf("\nError, no esta permitido usar -b y -p simultaneamente\n");
 		shutdown ();
 		thread_exit ();	
 	}

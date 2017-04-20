@@ -122,6 +122,7 @@ extern bool thread_mlfqs;
 extern int  scheduler_type;
 extern int  numThreads;
 extern int	typeThread;
+extern int  percent;
 
 
 void thread_init (void);
