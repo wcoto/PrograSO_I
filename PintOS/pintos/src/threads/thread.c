@@ -825,9 +825,9 @@ sjf (void)
 {
     ASSERT (scheduler_type == 3);
     char string[]="hilo_";
-    char string_result[11];
-    for (int i = 10; i < 20; i++) {
-        int time = 1 + (int) random_ulong() % 10;
+    char string_result[numThreads];
+    for (int i = 0; i < numThreads; i++) {
+        int time = 1 + (int) random_ulong() % numThreads;
         time = (time > 0) ? time : time * -1;
         snprintf(string_result,10,"%s%d",string,i);
         thread_create_time(string_result, 0, threads, NULL, time);
