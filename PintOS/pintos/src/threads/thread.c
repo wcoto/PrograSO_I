@@ -96,7 +96,7 @@ static void threads(void *aux UNUSED);
 
 static void ioBounded(void);
 static void cpuBounded(void);
-static void typeProcess(void);  //depende del valor de typeThread.
+static void createTypeProcess(void);  //depende del valor de typeThread.
 
 /* less */
 static bool time_less (const struct list_elem *a_, const struct list_elem *b_, void *aux UNUSED);
@@ -835,17 +835,21 @@ sjf (void)
         time = (time > 0) ? time : time * -1;
         snprintf(string_result,10,"%s%d",string,i);
         thread_create_time(string_result, 0, threads, NULL, time);
-        
+        createTypeProcess();
     }
 }
 
 static void
-typeThread (void)
+createTypeProcess (void)
 {
-  //si no se indica, x default seran tipo cpuBound
-  // ASSERT(typeThread==)
-  printf("tipo de hilo %s\n", );
-
+  //si no se indica, x default seran tipo cpuBound  
+  printf("proceso tipo: %s\n",typeThread );
+  if( typeThread== 0){
+    printf("\ntipo de hilo i/o bound\n");
+  }else if(typeThread==1){
+    printf("\ntipo de hilo cpu bounds\n");
+  }else
+    printf("\nno se ah marcado\n");
 
 }
 
@@ -861,7 +865,7 @@ ioBounded (void)
    printf("%d\n", *puntero);
    puntero++;
   }
-  
+
 }
 
 static void
