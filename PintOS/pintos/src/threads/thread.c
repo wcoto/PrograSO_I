@@ -809,6 +809,7 @@ fcfs (void)
     char string[]="hilo_";
     char string_result[10];
     for (int i = 0; i < 10; i++) {
+        printf ("Hilos en la lista: %i\n\n", list_size(&ready_list));
         int priority = PRI_DEFAULT + (int) random_ulong() % 10;
         snprintf(string_result,10,"%s%d",string,i);
         thread_create(string_result, priority, threads, NULL);
@@ -822,6 +823,7 @@ sjf (void)
     char string[]="hilo_";
     char string_result[11];
     for (int i = 10; i < 20; i++) {
+        printf ("Hilos en la lista: %i\n\n", list_size(&ready_list));
         int time = 1 + (int) random_ulong() % 10;
         time = (time > 0) ? time : time * -1;
         snprintf(string_result,10,"%s%d",string,i);
@@ -836,6 +838,7 @@ queue()
     char string[]="hilo_";
     char string_result[10];
     for (int i = 0; i < 10; i++) {
+        printf ("Hilos en la lista: %i\n\n", list_size(&ready_list));
         int priority = PRI_DEFAULT + (int) random_ulong() % 10;
         snprintf(string_result,10,"%s%d",string,i);
         thread_create_queue(string_result, priority, threads, NULL);
@@ -848,7 +851,7 @@ threads (void *aux UNUSED){
     printf ("\nHilo: %s\t", thread_name());
     printf ("Prioridad: %d\t", thread_get_priority());
     printf ("Tiempo: %d\t", thread_get_executionTime());
-    printf ("Total: %i\n\n", list_size(&ready_list));
+    printf ("Hilos restantes: %i\n\n", list_size(&ready_list));
 }
 
 
