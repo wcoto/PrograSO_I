@@ -286,9 +286,7 @@ parse_options (char **argv)
 				printf("\n-b solo acepta \"0\" y \"1\" \n");	
 				shutdown ();
 				thread_exit ();
-			}
-				
-			
+			}			
 	    }
 	    else if(!strcmp (name, "-p")){			//porcentaje del tipo de hilos
 			int percent = value;
@@ -310,10 +308,14 @@ parse_options (char **argv)
 		thread_exit ();	
 	}
 	if(using_p && using_b){
-		printf("\nError, no esta permitido usar -b y -p simultaneamente\n");
+		printf("\nError, no esta permitido usar -b y -p simultaneamente\n\n");
 		shutdown ();
 		thread_exit ();	
 	}
+// else if(!strcmp (name, "-l")){			//nombre del archivo
+		// printf("\nDigito -l valor: %s \n",value);
+
+  //   }
 
   /* Initialize the random number generator based on the system
      time.  This has no effect if an "-rs" option was specified.

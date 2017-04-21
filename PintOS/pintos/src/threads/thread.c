@@ -94,6 +94,9 @@ static void sjf(void);
 static void queue(void);
 static void threads(void *aux UNUSED);
 
+static void ioBounded(void);
+static void cpuBounded(void);
+
 /* less */
 static bool time_less (const struct list_elem *a_, const struct list_elem *b_, void *aux UNUSED);
 
@@ -831,8 +834,49 @@ sjf (void)
         time = (time > 0) ? time : time * -1;
         snprintf(string_result,10,"%s%d",string,i);
         thread_create_time(string_result, 0, threads, NULL, time);
+        ioBounded();
     }
 }
+
+static void
+ioBounded (void)
+{
+    printf("hola soy i/o Bound\n" );
+    // ASSERT (scheduler_type == 3);
+    // char string[]="hilo_";
+    // char string_result[numThreads];
+    // for (int i = 0; i < numThreads; i++) {
+    //     int time = 1 + (int) random_ulong() % numThreads;
+    //     time = (time > 0) ? time : time * -1;
+    //     snprintf(string_result,10,"%s%d",string,i);
+    //     thread_create_time(string_result, 0, threads, NULL, time);
+    // }
+    for(int i = 0; i< 100; i++){
+      suma = suma * 12345135;
+    }
+}
+
+static void
+cpuBounded (void)
+{
+    printf("hola soy cpu Bound\n" );
+    ASSERT (scheduler_type == 3);
+    // char string[]="hilo_";
+    // char string_result[numThreads];
+    // for (int i = 0; i < numThreads; i++) {
+    //     int time = 1 + (int) random_ulong() % numThreads;
+    //     time = (time > 0) ? time : time * -1;
+    //     snprintf(string_result,10,"%s%d",string,i);
+    //     thread_create_time(string_result, 0, threads, NULL, time);
+    // }
+    int suma = 5;
+    for(int i = 0; i< 100; i++){
+      suma = suma * 12345135;
+    }
+    
+    
+}
+
 
 static void
 queue()
