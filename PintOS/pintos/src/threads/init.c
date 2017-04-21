@@ -230,7 +230,9 @@ static char **
 parse_options (char **argv) 
 {
 	bool using_b= false;		//indica si el argumento typethread se ingreso para no permitir el uso del otro.
-	bool using_p = false;
+	using_p = false;
+  typeThread = 1;     //1 : cpu bound
+  numThreads=10;
 
 	for (; *argv != NULL && **argv == '-'; argv++)
     {
@@ -273,14 +275,14 @@ parse_options (char **argv)
         	thread_mlfqs = true;
 
       	}
-      	else if(!strcmp (name, "-t")){			//cantidad de hilos 
+      	else if(!strcmp (name, "-t")){			              //cantidad de hilos 
 	  		numThreads = atoi(value);
 	  		printf("\nDigito -t va1lor: %d \n",numThreads);
     	}
-    	else if(!strcmp (name, "-b")){			//tipo de hilo
+    	else if(!strcmp (name, "-b")){			                //tipo de hilo
     		using_b=true;
 			if(atoi(value) == 0 || atoi(value)==1){
-				typeThread= value;
+				typeThread= atoi(value);
 				printf("-b: %s\n", value );
 			}else{
 				printf("\n-b solo acepta \"0\" y \"1\" \n");	
@@ -288,10 +290,12 @@ parse_options (char **argv)
 				thread_exit ();
 			}			
 	    }
-	    else if(!strcmp (name, "-p")){			//porcentaje del tipo de hilos
-			int percent = value;
-			printf("\nDigito -p valor: %s \n",value);
-			using_p = true;
+	    else if(!strcmp (name, "-p")){			                
+  			numThreadsIOBound = numThreads*atoi(value)/100;      //porcentaje del tipo de hilos i/o bound
+  			printf("\nDigito -p valor: %s \n",value);
+        printf("\ncantidad hilos: %d \n",numThreads);
+        printf("\ncantidad iobound: %d \n",numThreadsIOBound);
+  			using_p = true;
 	    }
 
     	#ifdef USERPROG

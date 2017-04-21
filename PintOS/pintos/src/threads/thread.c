@@ -72,9 +72,10 @@ bool thread_mlfqs;
 int scheduler_type;
 
 /*variables para pruebas  */
-int numThreads =25;    
-int typeThread =1; //0: I/O bound, 1: CPU Bound
-int percent ;
+int numThreads ;    
+int typeThread ;                //0: I/O bound, 1: CPU Bound
+int numThreadsIOBound ;                   //num threads IO calculado por el orcentaje ingresado.
+bool using_p;                    //para saber cuando se utilizo.
 
 static void kernel_thread (thread_func *, void *aux);
 
@@ -94,9 +95,11 @@ static void sjf(void);
 static void queue(void);
 static void threads(void *aux UNUSED);
 
-static void ioBounded(void);
-static void cpuBounded(void);
-static void createTypeProcess(void);  //depende del valor de typeThread.
+
+// static void createTypeProcess(void *aux UNUSED);  
+static void createIOBounded(void *aux UNUSED);  
+static void createCPUBounded(void *aux UNUSED);  
+
 
 /* less */
 static bool time_less (const struct list_elem *a_, const struct list_elem *b_, void *aux UNUSED);
@@ -816,11 +819,26 @@ fcfs (void)
 {
     ASSERT(scheduler_type == 1);
     char string[]="hilo_";
-    char string_result[numThreads];
+    char string_result[10];
+
     for (int i = 0; i < numThreads; i++) {
-        int priority = PRI_DEFAULT + (int) random_ulong() % numThreads;
+
+        int priority = PRI_DEFAULT + (int) random_ulong() % 10;
         snprintf(string_result,10,"%s%d",string,i);
-        thread_create(string_result, priority, threads, NULL);
+        
+        if(using_p){          
+          if(numThreadsIOBound>0){
+            typeThread = 0;         //i/o bound
+           
+            numThreadsIOBound--;
+
+          }else{
+             thread_create(string_result, priority, createCPUBounded, NULL);
+            typeThread = 1;         //cpu bound
+          }
+        }else{
+           thread_create(string_result, priority, createCPUBounded, NULL);
+        } 
     }
 }
 
@@ -829,57 +847,55 @@ sjf (void)
 {
     ASSERT (scheduler_type == 3);
     char string[]="hilo_";
-    char string_result[numThreads];
+    char string_result[10];
+
     for (int i = 0; i < numThreads; i++) {
-        int time = 1 + (int) random_ulong() % numThreads;
+        int time = 1 + (int) random_ulong() % 10;
         time = (time > 0) ? time : time * -1;
         snprintf(string_result,10,"%s%d",string,i);
-        thread_create_time(string_result, 0, threads, NULL, time);
-        createTypeProcess();
+        
+        if(using_p){          
+          if(numThreadsIOBound>0){
+            typeThread = 0;         //i/o bound
+             thread_create_time(string_result, 0, createIOBounded, NULL, time); 
+            numThreadsIOBound--;
+
+          }else{
+             thread_create_time(string_result, 0, createCPUBounded, NULL, time); 
+            typeThread = 1;         //cpu bound
+          }
+        }else{
+          thread_create_time(string_result, 0, createCPUBounded, NULL, time);    
+        }                    
     }
 }
 
 static void
-createTypeProcess (void)
+createIOBounded (void *aux UNUSED)
 {
-  //si no se indica, x default seran tipo cpuBound  
-  printf("proceso tipo: %s\n",typeThread );
-  if( typeThread== 0){
-    printf("\ntipo de hilo i/o bound\n");
-  }else if(typeThread==1){
-    printf("\ntipo de hilo cpu bounds\n");
-  }else
-    printf("\nno se ah marcado\n");
+  printf("\ntipo de hilo i/o bound\n");    
+  //-------------createIOBounded-------------
+  int a[5] = {2423434, 2242342, 34234545, 423432, 5234234};
+  int *p ;
 
-}
-
-static void
-ioBounded (void)
-{
-  
-  int array[5] = {1234234, 1234234, 31234234, 1234234, 1234234};
-
-  int *puntero = array;  
   for (int i=0; i<5; i++)
   {
-   printf("%d\n", *puntero);
-   puntero++;
+    p=&a[i];
   }
-
 }
 
 static void
-cpuBounded (void)
-{
-    printf("hola soy cpu Bound\n" );
-
-    int suma = 5;
-    for(int i = 0; i< 100; i++){
-      suma = suma * 12345135;
-    }
+createCPUBounded (void *aux UNUSED)
+{  
+  printf("\ntipo de hilo cpu bounds\n\n");
+  //-------------createIOBounded-------------
+  int suma = 5;
+  for(int i = 0; i< 100; i++){
+    suma = suma * 12345135;
+  }  
 }
 
-
+/////////////REVISAR CON EL ACTUALIZADO EN MASTER
 static void
 queue()
 {
@@ -889,7 +905,8 @@ queue()
     for (int i = 0; i < numThreads; i++) {
         int priority = PRI_DEFAULT + (int) random_ulong() % numThreads;
         snprintf(string_result,10,"%s%d",string,i);
-        thread_create_queue(string_result, priority, threads, NULL);
+       
+        ///falta!!!!!!!!!!!11
     }
 }
 
@@ -902,7 +919,6 @@ threads (void *aux UNUSED){
     printf ("Total: %i\n\n", list_size(&ready_list));
 }
 
-
 /* Returns true if time value A is less than value B, false
    otherwise. */
 static bool
@@ -911,6 +927,5 @@ time_less (const struct list_elem *a_, const struct list_elem *b_,
 {
   const struct thread *a = list_entry (a_, struct thread, elem);
   const struct thread *b = list_entry (b_, struct thread, elem);
-
   return a->executionTime < b->executionTime;
 }
