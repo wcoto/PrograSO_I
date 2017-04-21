@@ -400,7 +400,7 @@ thread_unblock_queue(struct thread *t)
 
     old_level = intr_disable ();
     ASSERT (t->status == THREAD_BLOCKED);
-    if(t->priority < 30)
+    if(t->priority < PRI_DEFAULT)
         list_push_back (&ready_list, &t->elem);
     t->status = THREAD_READY;
     intr_set_level (old_level);
