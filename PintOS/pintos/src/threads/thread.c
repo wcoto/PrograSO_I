@@ -73,7 +73,7 @@ int scheduler_type;
 
 /*variables para pruebas  */
 int numThreads =25;    
-int typeThread ; //0: I/O bound, 1: CPU Bound
+int typeThread =1; //0: I/O bound, 1: CPU Bound
 int percent ;
 
 static void kernel_thread (thread_func *, void *aux);
@@ -96,6 +96,7 @@ static void threads(void *aux UNUSED);
 
 static void ioBounded(void);
 static void cpuBounded(void);
+static void typeProcess(void);  //depende del valor de typeThread.
 
 /* less */
 static bool time_less (const struct list_elem *a_, const struct list_elem *b_, void *aux UNUSED);
@@ -834,47 +835,44 @@ sjf (void)
         time = (time > 0) ? time : time * -1;
         snprintf(string_result,10,"%s%d",string,i);
         thread_create_time(string_result, 0, threads, NULL, time);
-        ioBounded();
+        
     }
+}
+
+static void
+typeThread (void)
+{
+  //si no se indica, x default seran tipo cpuBound
+  // ASSERT(typeThread==)
+  printf("tipo de hilo %s\n", );
+
+
 }
 
 static void
 ioBounded (void)
 {
-    printf("hola soy i/o Bound\n" );
-    // ASSERT (scheduler_type == 3);
-    // char string[]="hilo_";
-    // char string_result[numThreads];
-    // for (int i = 0; i < numThreads; i++) {
-    //     int time = 1 + (int) random_ulong() % numThreads;
-    //     time = (time > 0) ? time : time * -1;
-    //     snprintf(string_result,10,"%s%d",string,i);
-    //     thread_create_time(string_result, 0, threads, NULL, time);
-    // }
-    for(int i = 0; i< 100; i++){
-      suma = suma * 12345135;
-    }
+  
+  int array[5] = {1234234, 1234234, 31234234, 1234234, 1234234};
+
+  int *puntero = array;  
+  for (int i=0; i<5; i++)
+  {
+   printf("%d\n", *puntero);
+   puntero++;
+  }
+  
 }
 
 static void
 cpuBounded (void)
 {
     printf("hola soy cpu Bound\n" );
-    ASSERT (scheduler_type == 3);
-    // char string[]="hilo_";
-    // char string_result[numThreads];
-    // for (int i = 0; i < numThreads; i++) {
-    //     int time = 1 + (int) random_ulong() % numThreads;
-    //     time = (time > 0) ? time : time * -1;
-    //     snprintf(string_result,10,"%s%d",string,i);
-    //     thread_create_time(string_result, 0, threads, NULL, time);
-    // }
+
     int suma = 5;
     for(int i = 0; i< 100; i++){
       suma = suma * 12345135;
     }
-    
-    
 }
 
 
