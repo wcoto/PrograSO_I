@@ -361,7 +361,7 @@ sub cyl_sectors {
 #/home/wag/PrograSO_I/PintOS/pintos/src/threads/build/loader.bin
 sub read_loader {
     my ($name) = @_;
-    $name = find_file ("/home/wagcm/Documentos/PrograSO_I/PintOS/pintos/src/threads/build/loader.bin") if !defined $name;
+    $name = find_file ("/home/wag/PrograSO_I/PintOS/pintos/src/threads/build/loader.bin") if !defined $name;
     die "Cannot find loader\n" if !defined $name;
 
     my ($handle);

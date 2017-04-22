@@ -3,7 +3,7 @@
 # Path to GDB macros file.  Customize for your site.
 # /home/wagcm/Documentos/PrograSO_I/PintOS/pintos/src/misc/gdb-macros
 # /home/wag/PrograSO_I/PintOS/pintos/src/misc/gdb-macros
-GDBMACROS=/home/wagcm/Documentos/PrograSO_I/PintOS/pintos/src/misc/gdb-macros
+GDBMACROS=/home/wag/PrograSO_I/PintOS/pintos/src/misc/gdb-macros
 
 # Choose correct GDB.
 if command -v i386-elf-gdb >/dev/null 2>&1; then

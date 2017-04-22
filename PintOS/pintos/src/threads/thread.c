@@ -416,7 +416,7 @@ thread_unblock_queue(struct thread *t)
 
     old_level = intr_disable ();
     ASSERT (t->status == THREAD_BLOCKED);
-    if(t->priority < 30)
+    if(t->priority < PRI_DEFAULT)
         list_push_back (&ready_list, &t->elem);
     t->status = THREAD_READY;
     intr_set_level (old_level);
@@ -828,6 +828,7 @@ fcfs (void)
     int timeLastTime = 0;
 
     for (int i = 0; i < numThreads; i++) {
+    	printf ("Hilos en la lista: %i\n\n", list_size(&ready_list));
 
         int priority = PRI_DEFAULT + (int) random_ulong() % 10;
         snprintf(string_result,10,"%s%d",string,i);
@@ -853,9 +854,13 @@ sjf (void)
 {
     ASSERT (scheduler_type == 3);
     char string[]="hilo_";
-    char string_result[10];
+
+    char string_result[11];
 
     for (int i = 0; i < numThreads; i++) {
+
+        printf ("Hilos en la lista: %i\n\n", list_size(&ready_list));
+
         int time = 1 + (int) random_ulong() % 10;
         time = (time > 0) ? time : time * -1;
         snprintf(string_result,10,"%s%d",string,i);
@@ -910,12 +915,29 @@ queue()
 {
     ASSERT (scheduler_type == 2);
     char string[]="hilo_";
-    char string_result[numThreads];
+
+    char string_result[10];
     for (int i = 0; i < numThreads; i++) {
+    	printf ("Hilos en la lista: %i\n\n", list_size(&ready_list));
         int priority = PRI_DEFAULT + (int) random_ulong() % numThreads;
+
         snprintf(string_result,10,"%s%d",string,i);
        
-        ///falta!!!!!!!!!!!11
+        thread_create_queue(string_result, priority, threads, NULL);
+
+        if(using_p){          
+          if(numThreadsIOBound>0){
+            typeThread = 0;         //i/o bound
+            thread_create_queue(string_result, priority, createIOBounded, NULL);
+            numThreadsIOBound--;
+
+          }else{
+          	thread_create_queue(string_result, priority, createCPUBounded, NULL);
+            typeThread = 1;         //cpu bound
+          }
+        }else{
+        	thread_create_queue(string_result, priority, createCPUBounded, NULL);
+        }  
     }
 }
 
@@ -926,7 +948,11 @@ threads (void *aux UNUSED){
     printf ("\nPID: %d\t", thread_tid());
     printf ("Prioridad: %d\t", thread_get_priority());   //prioridad en el algoritmo cola
     printf ("Tiempo: %d\t", thread_get_executionTime());
-    printf ("HilosTotals: %i\n\n", list_size(&ready_list));
+
+
+    printf ("Hilos restantes: %i\n\n", list_size(&ready_list));
+
+
 
 }
 
