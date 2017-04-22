@@ -486,20 +486,26 @@ thread_unblock_queue(struct thread *t)
     ASSERT (is_thread (t));
 
     old_level = intr_disable ();
+    printf("priori: %d\n",t->priority);
+
     ASSERT (t->status == THREAD_BLOCKED);
-    if(t->priority < PRI_DEFAULT)
+    if(t->priority < PRI_DEFAULT){
         list_push_back (&ready_list, &t->elem);
+	    
+	    if(&t->elem == list_begin(&ready_list)  ){
+		  	t->waitingTime=0;
+		  	// printf("primer elemento");
+	  	}else{
+		  	struct thread *temporal = list_entry (list_prev(&t->elem), struct thread, elem);		//me retorna el thread perteneciente al elem correspondiente.
+		  	t->waitingTime = temporal->executionTime + temporal->waitingTime;
+		  	timeAvgTotal = (t->waitingTime)/numThreads +timeAvgTotal;
+  		}
+    }
+
     t->status = THREAD_READY;
     intr_set_level (old_level);
 
-    if(&t->elem == list_begin(&ready_list)  ){
-	  	t->waitingTime=0;
-	  	printf("primer elemento");
-  	}else{
-	  	struct thread *temporal = list_entry (list_prev(&t->elem), struct thread, elem);		//me retorna el thread perteneciente al elem correspondiente.
-	  	// t->waitingTime = temporal->executionTime + temporal->waitingTime;
-	  	// timeAvgTotal = (t->waitingTime)/numThreads +timeAvgTotal;
-  }
+    
 }
 
 /* Returns the name of the running thread. */
@@ -1066,7 +1072,6 @@ createCPUBounded (void *aux UNUSED)
   threads(NULL);
 }
 
-/////////////REVISAR CON EL ACTUALIZADO EN MASTER
 static void
 queue()
 {
@@ -1079,13 +1084,13 @@ queue()
     	int time = 1 + (int) random_ulong() % 10;
         time = (time > 0) ? time : time * -1;
 
-    	printf ("Hilos en la lista: %i\n\n", list_size(&ready_list));
-        int priority = PRI_DEFAULT + (int) random_ulong() % numThreads;
+    	printf ("\nHilos en la lista: %i\n\n", list_size(&ready_list));
+        int priority = PRI_DEFAULT + (int) random_ulong() % 9;
+
+        printf("prioridad: %d\n", priority);
 
         snprintf(string_result,10,"%s%d",string,i);
        
-        // thread_create_queue(string_result, priority, threads, NULL);
-
         if(using_p){          
           if(numThreadsIOBound>0){
             typeThread = 0;         //i/o bound
