@@ -944,12 +944,11 @@ fcfs (void)
 
 //////pruebas:///////// 
 
-	// int time[10]={2,5,8,9,11,13,15,16,20,23};
+	// int time[10]={2,5,8,9,11,13,15,16,23,30};
  //    for (int i = 0; i < 10; i++) {
     
  //        int priority = time[i];           //se coloco igual q el tiempo.
  //        snprintf(string_result,10,"%s%d",string,i);
- //         snprintf(string_result,10,"%s%d",string,i);
         
  //        if(using_p){          
  //          if(numThreadsIOBound>0){
@@ -983,9 +982,8 @@ sjf (void)
     char string_result[11];
 
 
+////////////comentar para rpuebas///////////
     for (int i = 0; i < numThreads; i++) {
-
-        // printf ("Hilos en la lista: %i\n\n", list_size(&ready_list));
 
         int time = 1 + (int) random_ulong() % 10;
         time = (time > 0) ? time : time * -1;
@@ -1009,12 +1007,30 @@ sjf (void)
     ///////////////pruebas//////
 
 
+	// int time[10]={2,5,8,9,11,13,15,16,30,23};
+	// 			  // 0,2,7,35,24,35,15,48,64,84 
 
+ //    for (int i = 0; i < 10; i++) {    
+ //        int priority = time[i];           //se coloco igual q el tiempo.
+ //        snprintf(string_result,10,"%s%d",string,i);
+               
+ //        if(using_p){          
+ //          if(numThreadsIOBound>0){
+ //            typeThread = 0;         //i/o bound
+ //             thread_create_time(string_result, 0, createIOBounded, NULL, time[i]); 
+ //            numThreadsIOBound--;
 
+ //          }else{
+ //            thread_create_time(string_result, 0, createCPUBounded, NULL, time[i]); 
+ //            typeThread = 1;         //cpu bound
+ //          }
+ //        }else{
+ //           thread_create_time(string_result, 0, createCPUBounded, NULL, time[i]);    
+ //     	}
+ //     }//fin for 
+ //    /////////////////////
 
-    /////////////////////
-
-	/////para pruebas comentar el for e introduccir el codigo del final del archivo.
+	// /////para pruebas comentar el for e introduccir el codigo del final del archivo.
     timeAvgTotal = sumTotalTimesWaiting/numThreads;
     printf("\t\t\t\t   TimeWaitAvg: %d\n",timeAvgTotal);
     printf("Total de threads: %d\n\n",numThreads);
