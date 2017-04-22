@@ -486,7 +486,7 @@ thread_unblock_queue(struct thread *t)
     ASSERT (is_thread (t));
 
     old_level = intr_disable ();
-    printf("priori: %d\n",t->priority);
+    // printf("priori: %d\n",t->priority);
 
     ASSERT (t->status == THREAD_BLOCKED);
     if(t->priority < PRI_DEFAULT){
@@ -1082,58 +1082,59 @@ queue()
 
 
 ////////////////////comentar para pruebas:
-    // for (int i = 0; i < numThreads; i++) {
-    // 	int time = 1 + (int) random_ulong() % 10;
-    //     time = (time > 0) ? time : time * -1;
+    for (int i = 0; i < numThreads; i++) {
+    	int time = 1 + (int) random_ulong() % 10;
+        time = (time > 0) ? time : time * -1;
 
-    // 	printf ("\nHilos en la lista: %i\n\n", list_size(&ready_list));
-    //     int priority = PRI_DEFAULT + (int) random_ulong() % 9;
-
-    //     printf("prioridad: %d\n", priority);
-
-    //     snprintf(string_result,10,"%s%d",string,i);
-       
-    //     if(using_p){          
-    //       if(numThreadsIOBound>0){
-    //         typeThread = 0;         //i/o bound
-    //         thread_create_queue(string_result, priority, createIOBounded, NULL,time);
-    //         numThreadsIOBound--;
-
-    //       }else{
-    //       	thread_create_queue(string_result, priority, createCPUBounded, NULL,time);
-    //         typeThread = 1;         //cpu bound
-    //       }
-    //     }else{
-    //     	thread_create_queue(string_result, priority, createCPUBounded, NULL,time);
-    //     }  
-    // }
-///////////////////////////////////////////
-////////////decomentar para pruebas://////////////////
-    int time[10]={2,5,8,9,11,13,15,16,30,23};
-	// 			  // 0,2,7,35,24,35,15,48,64,84 
-        
-   for (int i = 0; i < 10; i++) {
-   		int priority = time[i];           //se coloco igual q el tiempo.
-       
-    	printf ("\nHilos en la lista: %i\n\n", list_size(&ready_list));      
+    	printf ("\nHilos en la lista: %i\n\n", list_size(&ready_list));
+        int priority = PRI_DEFAULT + (int) random_ulong() % numThreads;
 
         printf("prioridad: %d\n", priority);
+
         snprintf(string_result,10,"%s%d",string,i);
        
         if(using_p){          
           if(numThreadsIOBound>0){
             typeThread = 0;         //i/o bound
-            thread_create_queue(string_result, priority, createIOBounded, NULL,time[i]);
+            thread_create_queue(string_result, priority, createIOBounded, NULL,time);
             numThreadsIOBound--;
 
           }else{
-          	thread_create_queue(string_result, priority, createCPUBounded, NULL,time[i]);
+          	thread_create_queue(string_result, priority, createCPUBounded, NULL,time);
             typeThread = 1;         //cpu bound
           }
         }else{
-        	thread_create_queue(string_result, priority, createCPUBounded, NULL,time[i]);
+        	thread_create_queue(string_result, priority, createCPUBounded, NULL,time);
         }  
     }
+///////////////////////////////////////////
+////////////decomentar para pruebas://////////////////
+ //    int time[10]={2,5,8,9,11,13,15,16,30,23};
+	// // 			  // 0,2,7,35,24,35,15,48,64,84 
+        
+ //   for (int i = 0; i < 10; i++) {
+ //   		int priority = PRI_DEFAULT + (int) random_ulong() % 9;           //se coloco igual q el tiempo.
+       
+ //    	// printf ("\nHilos en la lista: %i\n\n", list_size(&ready_list));      
+
+ //        // printf("prioridad: %d\n", priority);
+ //        snprintf(string_result,10,"%s%d",string,i);
+       
+ //        if(using_p){          
+ //          if(numThreadsIOBound>0){
+ //            typeThread = 0;         //i/o bound
+ //            thread_create_queue(string_result, priority, createIOBounded, NULL,time[i]);
+ //            numThreadsIOBound--;
+
+ //          }else{
+ //          	thread_create_queue(string_result, priority, createCPUBounded, NULL,time[i]);
+ //            typeThread = 1;         //cpu bound
+ //          }
+ //        }else{
+ //        	thread_create_queue(string_result, priority, createCPUBounded, NULL,time[i]);
+ //        }  
+ //    }
+    ///////////////
 
 
 }
