@@ -79,6 +79,7 @@ bool using_p;                    //para saber cuando se utilizo.
 
 /*variables para los tiempos*/
 int timeAvgTotal = 0;
+int sumTotalTimesWaiting = 0;	//para obtener el timeAvgTotal
 
 
 static void kernel_thread (thread_func *, void *aux);
@@ -446,7 +447,7 @@ thread_unblock (struct thread *t)
   }else{
   	 struct thread *temporal = list_entry (list_prev(&t->elem), struct thread, elem);		//me retorna el thread perteneciente al elem correspondiente.
   	 t->waitingTime = temporal->executionTime + temporal->waitingTime;
-  	 timeAvgTotal = (t->waitingTime)/numThreads +timeAvgTotal;
+  	 sumTotalTimesWaiting = (t->waitingTime)+sumTotalTimesWaiting; 
   }
 
 }
@@ -892,19 +893,19 @@ thread_scheduler_type(void)
 {
     switch (scheduler_type) {
         case 1:
-            printf("\t\t\tScheduler: First Come First Serve\n");
+            printf("\n\t\t\t---Scheduler: First Come First Serve---\n");
             fcfs();
             break;
         case 2:
-            printf("\t\t\tScheduler: Multilevel Queue\n");
+            printf("\n\t\t\t---Scheduler: Multilevel Queue---\n");
             queue();
             break;
         case 3:
-            printf("\t\t\tScheduler: Short Job First\n");
+            printf("\n\t\t\t---Scheduler: Short Job First---\n");
             sjf();
             break;
         case 4:
-            printf("\t\t\tScheduler: Round Robin\n");
+            printf("\n\t\t\t---Scheduler: Round Robin---\n");
             break;
         default:
             break;
@@ -924,7 +925,7 @@ fcfs (void)
     	int time = 1 + (int) random_ulong() % 10;
     	time = (time > 0) ? time : time * -1;
 
-    	printf ("Hilos en la lista: %i\n\n", list_size(&ready_list));
+    	// printf ("Hilos en la lista: %i\n\n", list_size(&ready_list));
 
         int priority = PRI_DEFAULT + (int) random_ulong() % 10;
      snprintf(string_result,10,"%s%d",string,i);
@@ -971,7 +972,9 @@ fcfs (void)
     }
 
     /////para pruebas comentar el for e introduccir el codigo del final del archivo.
-    printf("TimeWaitAvg: %d\n\n",timeAvgTotal);
+    timeAvgTotal = sumTotalTimesWaiting/numThreads;
+    printf("\t\t\t\t   TimeWaitAvg: %d\n",timeAvgTotal);
+    printf("Total de threads: %d\n\n",numThreads);
 }
 
 static void
@@ -1046,6 +1049,7 @@ queue()
     char string[]="hilo_";
 
     char string_result[10];
+
     for (int i = 0; i < numThreads; i++) {
     	int time = 1 + (int) random_ulong() % 10;
         time = (time > 0) ? time : time * -1;
@@ -1076,14 +1080,14 @@ queue()
 
 static void
 threads (void *aux UNUSED){
-    printf ("\t\tHilo: %s\t", thread_name());
+    printf ("\t\tNameThread: %s\t", thread_name());
     printf ("\nPID: %d\t", thread_tid());
-    printf ("Prioridad: %d\t", thread_get_priority());   //prioridad en el algoritmo cola
-    printf ("Tiempo: %d\t", thread_get_executionTime());
+    printf ("Priority: %d\t", thread_get_priority());   //prioridad en el algoritmo cola
+    printf ("TimeExecution: %d\t", thread_get_executionTime());
     printf("TimeWait: %d\t",thread_get_waitingTime());
     // printf("TimeWaitAvg: %d\t",timeAvgTotal);
 
-    printf ("Hilos restantes: %i\n\n", list_size(&ready_list));
+    printf ("TotalThreads: %i\n\n", list_size(&ready_list));
 
 
 
