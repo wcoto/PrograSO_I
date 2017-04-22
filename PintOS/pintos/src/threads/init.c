@@ -277,13 +277,13 @@ parse_options (char **argv)
       	}
       	else if(!strcmp (name, "-t")){			              //cantidad de hilos 
 	  		numThreads = atoi(value);
-	  		printf("\nDigito -t va1lor: %d \n",numThreads);
+	  		// printf("\nDigito -t va1lor: %d \n",numThreads);
     	}
     	else if(!strcmp (name, "-b")){			                //tipo de hilo
     		using_b=true;
 			if(atoi(value) == 0 || atoi(value)==1){
 				typeThread= atoi(value);
-				printf("-b: %s\n", value );
+				// printf("-b: %s\n", value );
 			}else{
 				printf("\n-b solo acepta \"0\" y \"1\" \n");	
 				shutdown ();
@@ -292,9 +292,9 @@ parse_options (char **argv)
 	    }
 	    else if(!strcmp (name, "-p")){			                
   			numThreadsIOBound = numThreads*atoi(value)/100;      //porcentaje del tipo de hilos i/o bound
-  			printf("\nDigito -p valor: %s \n",value);
-        printf("\ncantidad hilos: %d \n",numThreads);
-        printf("\ncantidad iobound: %d \n",numThreadsIOBound);
+  			printf("\nDigito -p valor: %s ",value);
+        printf("\tcantidad hilos: %d ",numThreads);
+        printf("\tcantidad iobound: %d ",numThreadsIOBound);
   			using_p = true;
 	    }
 
@@ -492,3 +492,15 @@ locate_block_device (enum block_type role, const char *name)
     }
 }
 #endif
+
+
+/*
+
+        
+      
+
+
+*/
+
+
+
