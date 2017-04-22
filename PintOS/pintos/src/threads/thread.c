@@ -1,4 +1,4 @@
-﻿/*
+/*
 	Algorithms:
 			FCFS
 			Colas multinivel
@@ -76,6 +76,10 @@ int numThreads ;
 int typeThread ;                //0: I/O bound, 1: CPU Bound
 int numThreadsIOBound ;                   //num threads IO calculado por el orcentaje ingresado.
 bool using_p;                    //para saber cuando se utilizo.
+
+/*variables para los tiempos*/
+int timeAvgTotal = 0;
+
 
 static void kernel_thread (thread_func *, void *aux);
 
@@ -821,6 +825,8 @@ fcfs (void)
     char string[]="hilo_";
     char string_result[10];
 
+    int timeLastTime = 0;
+
     for (int i = 0; i < numThreads; i++) {
 
         int priority = PRI_DEFAULT + (int) random_ulong() % 10;
@@ -873,7 +879,7 @@ sjf (void)
 static void
 createIOBounded (void *aux UNUSED)
 {
-  printf("\ntipo de hilo i/o bound\n");    
+  printf("\nTipo: i/o bound\n");    
   //-------------createIOBounded-------------
   int a[5] = {2423434, 2242342, 34234545, 423432, 5234234};
   int *p ;
@@ -882,17 +888,20 @@ createIOBounded (void *aux UNUSED)
   {
     p=&a[i];
   }
+  threads(NULL);
+
 }
 
 static void
 createCPUBounded (void *aux UNUSED)
 {  
-  printf("\ntipo de hilo cpu bounds\n\n");
-  //-------------createIOBounded-------------
+  printf("\nTipo: cpu bound\n");
+  //-------------createCPUBounded-------------
   int suma = 5;
   for(int i = 0; i< 100; i++){
     suma = suma * 12345135;
   }  
+  threads(NULL);
 }
 
 /////////////REVISAR CON EL ACTUALIZADO EN MASTER
@@ -914,9 +923,11 @@ queue()
 static void
 threads (void *aux UNUSED){
     printf ("\nHilo: %s\t", thread_name());
-    printf ("Prioridad: %d\t", thread_get_priority());
+    printf ("\nPID: %d\t", thread_tid());
+    printf ("Prioridad: %d\t", thread_get_priority());   //prioridad en el algoritmo cola
     printf ("Tiempo: %d\t", thread_get_executionTime());
-    printf ("Total: %i\n\n", list_size(&ready_list));
+    printf ("HilosTotals: %i\n\n", list_size(&ready_list));
+
 }
 
 /* Returns true if time value A is less than value B, false
