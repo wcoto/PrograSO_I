@@ -473,11 +473,9 @@ thread_unblock_time (struct thread *t)
   	printf("primer elemento");
   }else{
   	 struct thread *temporal = list_entry (list_prev(&t->elem), struct thread, elem);		//me retorna el thread perteneciente al elem correspondiente.
-  	 t->waitingTime= temporal->executionTime + temporal->waitingTime;
-  	 // printf("execution anterior: %d\n", temporal->executionTime);
+  	 t->waitingTime = temporal->executionTime + temporal->waitingTime;
+  	 sumTotalTimesWaiting = (t->waitingTime)+sumTotalTimesWaiting; 
   }
-  // t->waitingTime = list_prev()->waitingTime+list_prev()->executionTime;
-  
 }
 
 void
@@ -920,7 +918,7 @@ fcfs (void)
     char string_result[10];
 
     
-///////////////
+///////////////comentar esto y descomentar el otro para realizar las pruebas:
     for (int i = 0; i < numThreads; i++) {
     	int time = 1 + (int) random_ulong() % 10;
     	time = (time > 0) ? time : time * -1;
@@ -942,30 +940,29 @@ fcfs (void)
           }
         }else{
            thread_create_fcfs(string_result, priority, createCPUBounded, NULL,time);
+
+
 //////pruebas:///////// 
-// int time[10]={6,8,7,3,1,0,6,2,7,4};
-  
-//   for (int i = 0; i < 10; i++) {
-//       // time = time[i];
-      
-//       // printf("time: %d\n", time[i]);
 
-//         int priority = time[i];           //se coloco igual q el tiempo.
-//         snprintf(string_result,10,"%s%d",string,i);
-//          snprintf(string_result,10,"%s%d",string,i);
+	// int time[10]={2,5,8,9,11,13,15,16,20,23};
+ //    for (int i = 0; i < 10; i++) {
+    
+ //        int priority = time[i];           //se coloco igual q el tiempo.
+ //        snprintf(string_result,10,"%s%d",string,i);
+ //         snprintf(string_result,10,"%s%d",string,i);
         
-//         if(using_p){          
-//           if(numThreadsIOBound>0){
-//             typeThread = 0;         //i/o bound
-//            thread_create_fcfs(string_result, priority, createIOBounded, NULL,time[i]);
-//             numThreadsIOBound--;
+ //        if(using_p){          
+ //          if(numThreadsIOBound>0){
+ //            typeThread = 0;         //i/o bound
+ //           thread_create_fcfs(string_result, priority, createIOBounded, NULL,time[i]);
+ //            numThreadsIOBound--;
 
-//           }else{
-//              thread_create_fcfs(string_result, priority, createCPUBounded, NULL,time[i]);
-//             typeThread = 1;         //cpu bound
-//           }
-//         }else{
-//            thread_create_fcfs(string_result, priority, createCPUBounded, NULL,time[i]);
+ //          }else{
+ //             thread_create_fcfs(string_result, priority, createCPUBounded, NULL,time[i]);
+ //            typeThread = 1;         //cpu bound
+ //          }
+ //        }else{
+ //           thread_create_fcfs(string_result, priority, createCPUBounded, NULL,time[i]);
 ///////////  
        
         } 
@@ -985,12 +982,10 @@ sjf (void)
 
     char string_result[11];
 
-    // timeAvgTotal = 0;						//var global para el tiempo promedio.
-    // timeLast= 0;
 
     for (int i = 0; i < numThreads; i++) {
 
-        printf ("Hilos en la lista: %i\n\n", list_size(&ready_list));
+        // printf ("Hilos en la lista: %i\n\n", list_size(&ready_list));
 
         int time = 1 + (int) random_ulong() % 10;
         time = (time > 0) ? time : time * -1;
@@ -1011,6 +1006,20 @@ sjf (void)
         }
                           
     }
+    ///////////////pruebas//////
+
+
+
+
+
+    /////////////////////
+
+	/////para pruebas comentar el for e introduccir el codigo del final del archivo.
+    timeAvgTotal = sumTotalTimesWaiting/numThreads;
+    printf("\t\t\t\t   TimeWaitAvg: %d\n",timeAvgTotal);
+    printf("Total de threads: %d\n\n",numThreads);
+
+
 }
 
 static void

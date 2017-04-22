@@ -294,7 +294,7 @@ parse_options (char **argv)
   			numThreadsIOBound = numThreads*atoi(value)/100;      //porcentaje del tipo de hilos i/o bound
   			printf("\nDigito -p valor: %s ",value);
         printf("\tcantidad hilos: %d ",numThreads);
-        printf("\tcantidad iobound: %d ",numThreadsIOBound);
+        printf("\tcantidad iobound: %d \n",numThreadsIOBound);
   			using_p = true;
 	    }
 
