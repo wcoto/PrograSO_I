@@ -105,7 +105,6 @@ static void threads(void *aux UNUSED);
 static void createIOBounded(void *aux UNUSED);  
 static void createCPUBounded(void *aux UNUSED);  
 
-
 /* less */
 static bool time_less (const struct list_elem *a_, const struct list_elem *b_, void *aux UNUSED);
 
@@ -944,8 +943,10 @@ fcfs (void)
              thread_create_fcfs(string_result, priority, createCPUBounded, NULL,time);
             typeThread = 1;         //cpu bound
           }
+        }else if(typeThread==1){
+        	thread_create_fcfs(string_result, priority, createCPUBounded, NULL,time);  
         }else{
-           thread_create_fcfs(string_result, priority, createCPUBounded, NULL,time);
+           thread_create_fcfs(string_result, priority, createIOBounded, NULL,time);
 
 
 //////pruebas:///////// 
@@ -1005,8 +1006,10 @@ sjf (void)
              thread_create_time(string_result, 0, createCPUBounded, NULL, time); 
             typeThread = 1;         //cpu bound
           }
+        }else if(typeThread==1){
+        	thread_create_time(string_result, 0, createCPUBounded, NULL, time);    
         }else{
-          thread_create_time(string_result, 0, createCPUBounded, NULL, time);    
+          thread_create_time(string_result, 0, createIOBounded, NULL, time);    
         }
                           
     }
@@ -1103,8 +1106,10 @@ queue()
           	thread_create_queue(string_result, priority, createCPUBounded, NULL,time);
             typeThread = 1;         //cpu bound
           }
-        }else{
+        }else if(typeThread==1){
         	thread_create_queue(string_result, priority, createCPUBounded, NULL,time);
+        }else{
+        	thread_create_queue(string_result, priority, createIOBounded, NULL,time);
         }  
     }
 ///////////////////////////////////////////
@@ -1130,7 +1135,9 @@ queue()
  //          	thread_create_queue(string_result, priority, createCPUBounded, NULL,time[i]);
  //            typeThread = 1;         //cpu bound
  //          }
- //        }else{
+ //        }else if(typeThread==1){
+        // 	thread_create_queue(string_result, priority, createCPUBounded, NULL,time);
+        // }else{
  //        	thread_create_queue(string_result, priority, createCPUBounded, NULL,time[i]);
  //        }  
  //    }

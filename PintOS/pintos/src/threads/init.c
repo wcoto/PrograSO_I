@@ -231,7 +231,7 @@ parse_options (char **argv)
 {
 	bool using_b= false;		//indica si el argumento typethread se ingreso para no permitir el uso del otro.
 	using_p = false;
-  typeThread = 1;     //1 : cpu bound
+  typeThread = 0;     //0 : I/O bound
   numThreads=10;
 
 	for (; *argv != NULL && **argv == '-'; argv++)
