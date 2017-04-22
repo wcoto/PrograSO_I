@@ -355,7 +355,7 @@ thread_create_time (const char *name, int priority,
 /* Creates a thread by using the multilevel queue scheduler */
 tid_t
 thread_create_queue (const char *name, int priority,
-               thread_func *function, void *aux)
+               thread_func *function, void *aux, int time)
 {
   struct thread *t;
   struct kernel_thread_frame *kf;
@@ -372,7 +372,7 @@ thread_create_queue (const char *name, int priority,
     return TID_ERROR;
 
   /* Initialize thread. */
-  init_thread (t, name, priority);
+  init_thread_time (t, name, priority,time);
   tid = t->tid = allocate_tid ();
 
   /* Prepare thread for first run by initializing its stack.
@@ -492,6 +492,15 @@ thread_unblock_queue(struct thread *t)
         list_push_back (&ready_list, &t->elem);
     t->status = THREAD_READY;
     intr_set_level (old_level);
+
+    if(&t->elem == list_begin(&ready_list)  ){
+	  	t->waitingTime=0;
+	  	printf("primer elemento");
+  	}else{
+	  	// struct thread *temporal = list_entry (list_prev(&t->elem), struct thread, elem);		//me retorna el thread perteneciente al elem correspondiente.
+	  	// t->waitingTime = temporal->executionTime + temporal->waitingTime;
+	  	// timeAvgTotal = (t->waitingTime)/numThreads +timeAvgTotal;
+  }
 }
 
 /* Returns the name of the running thread. */
@@ -1010,25 +1019,28 @@ queue()
 
     char string_result[10];
     for (int i = 0; i < numThreads; i++) {
+    	int time = 1 + (int) random_ulong() % 10;
+        time = (time > 0) ? time : time * -1;
+
     	printf ("Hilos en la lista: %i\n\n", list_size(&ready_list));
         int priority = PRI_DEFAULT + (int) random_ulong() % numThreads;
 
         snprintf(string_result,10,"%s%d",string,i);
        
-        thread_create_queue(string_result, priority, threads, NULL);
+        // thread_create_queue(string_result, priority, threads, NULL);
 
         if(using_p){          
           if(numThreadsIOBound>0){
             typeThread = 0;         //i/o bound
-            thread_create_queue(string_result, priority, createIOBounded, NULL);
+            thread_create_queue(string_result, priority, createIOBounded, NULL,time);
             numThreadsIOBound--;
 
           }else{
-          	thread_create_queue(string_result, priority, createCPUBounded, NULL);
+          	thread_create_queue(string_result, priority, createCPUBounded, NULL,time);
             typeThread = 1;         //cpu bound
           }
         }else{
-        	thread_create_queue(string_result, priority, createCPUBounded, NULL);
+        	thread_create_queue(string_result, priority, createCPUBounded, NULL,time);
         }  
     }
 }

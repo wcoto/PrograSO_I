@@ -172,7 +172,7 @@ void thread_scheduler_type(void);
 tid_t thread_create_time (const char *name, int priority, thread_func *, void *, int time);
 
 /* Queue Threads */
-tid_t thread_create_queue (const char *name, int priority, thread_func *, void *);
+tid_t thread_create_queue (const char *name, int priority, thread_func *, void *, int time);
 
 /* fcfs Threads */
 tid_t thread_create_fcfs(const char *name, int priority, thread_func *, void *,int time);
