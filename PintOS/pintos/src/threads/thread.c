@@ -252,6 +252,55 @@ thread_create (const char *name, int priority,
   return tid;
 }
 
+thread_create_fcfs (const char *name, int priority,
+               thread_func *function, void *aux,int time)
+{
+  struct thread *t;
+  struct kernel_thread_frame *kf;
+  struct switch_entry_frame *ef;
+  struct switch_threads_frame *sf;
+  tid_t tid;
+  enum intr_level old_level;
+
+  ASSERT (function != NULL);
+
+  /* Allocate thread. */
+  t = palloc_get_page (PAL_ZERO);
+  if (t == NULL)
+    return TID_ERROR;
+
+  /* Initialize thread. */
+  init_thread_time (t, name, priority, time );
+  tid = t->tid = allocate_tid ();
+
+  /* Prepare thread for first run by initializing its stack.
+     Do this atomically so intermediate values for the 'stack' 
+     member cannot be observed. 3/7/4 */
+  old_level = intr_disable ();
+
+  /* Stack frame for kernel_thread(). */
+  kf = alloc_frame (t, sizeof *kf);
+  kf->eip = NULL;
+  kf->function = function;
+  kf->aux = aux;
+
+  /* Stack frame for switch_entry(). */
+  ef = alloc_frame (t, sizeof *ef);
+  ef->eip = (void (*) (void)) kernel_thread;
+
+  /* Stack frame for switch_threads(). */
+  sf = alloc_frame (t, sizeof *sf);
+  sf->eip = switch_entry;
+  sf->ebp = 0;
+
+  intr_set_level (old_level);
+
+  /* Add to run queue. */
+  thread_unblock (t);
+
+  return tid;
+}
+
 /* Hilos con tiempo */
 tid_t
 thread_create_time (const char *name, int priority,
@@ -390,9 +439,20 @@ thread_unblock (struct thread *t)
   list_push_back (&ready_list, &t->elem);
   t->status = THREAD_READY;
   intr_set_level (old_level);
+
+  if(&t->elem == list_begin(&ready_list)  ){
+  	t->waitingTime=0;
+  	printf("primer elemento");
+  }else{
+  	 struct thread *temporal = list_entry (list_prev(&t->elem), struct thread, elem);		//me retorna el thread perteneciente al elem correspondiente.
+  	 t->waitingTime = temporal->executionTime + temporal->waitingTime;
+  	 timeAvgTotal = (t->waitingTime)/numThreads +timeAvgTotal;
+  }
+
 }
 
 /* Thread unblock time */
+bool insertedFirstElement = false;///para saber si se insert ya el primer elemento de lista
 void
 thread_unblock_time (struct thread *t)
 {
@@ -403,8 +463,20 @@ thread_unblock_time (struct thread *t)
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
   list_insert_ordered(&ready_list, &t->elem, time_less, NULL);
-  t->status = THREAD_READY;
+	t->status = THREAD_READY;
   intr_set_level (old_level);
+
+  if(&t->elem == list_begin(&ready_list) && insertedFirstElement==false ){
+  	t->waitingTime=0;
+  	insertedFirstElement = true;
+  	printf("primer elemento");
+  }else{
+  	 struct thread *temporal = list_entry (list_prev(&t->elem), struct thread, elem);		//me retorna el thread perteneciente al elem correspondiente.
+  	 t->waitingTime= temporal->executionTime + temporal->waitingTime;
+  	 // printf("execution anterior: %d\n", temporal->executionTime);
+  }
+  // t->waitingTime = list_prev()->waitingTime+list_prev()->executionTime;
+  
 }
 
 void
@@ -566,6 +638,18 @@ void thread_set_executionTime(int pExecutiontime)
 int  thread_get_executionTime(void){
     return thread_current()->executionTime;
 }
+
+/* Sets the current thread's waiting time value */
+void thread_set_waitingTime(int pWaitingTime)
+{
+    thread_current()->waitingTime = pWaitingTime;//
+}
+
+/* Gets the current thread's execution time value */
+int  thread_get_waitingTime(void){
+    return thread_current()->waitingTime;
+}
+
 
 /* Idle thread.  Executes when no other thread is ready to run.
 
@@ -825,9 +909,12 @@ fcfs (void)
     char string[]="hilo_";
     char string_result[10];
 
-    int timeLastTime = 0;
+    
 
     for (int i = 0; i < numThreads; i++) {
+    	int time = 1 + (int) random_ulong() % 10;
+    	time = (time > 0) ? time : time * -1;
+
     	printf ("Hilos en la lista: %i\n\n", list_size(&ready_list));
 
         int priority = PRI_DEFAULT + (int) random_ulong() % 10;
@@ -836,17 +923,18 @@ fcfs (void)
         if(using_p){          
           if(numThreadsIOBound>0){
             typeThread = 0;         //i/o bound
-           
+           thread_create_fcfs(string_result, priority, createIOBounded, NULL,time);
             numThreadsIOBound--;
 
           }else{
-             thread_create(string_result, priority, createCPUBounded, NULL);
+             thread_create_fcfs(string_result, priority, createCPUBounded, NULL,time);
             typeThread = 1;         //cpu bound
           }
         }else{
-           thread_create(string_result, priority, createCPUBounded, NULL);
+           thread_create_fcfs(string_result, priority, createCPUBounded, NULL,time);
         } 
     }
+    printf("TimeWaitAvg: %d\n\n",timeAvgTotal);
 }
 
 static void
@@ -856,6 +944,9 @@ sjf (void)
     char string[]="hilo_";
 
     char string_result[11];
+
+    // timeAvgTotal = 0;						//var global para el tiempo promedio.
+    // timeLast= 0;
 
     for (int i = 0; i < numThreads; i++) {
 
@@ -877,14 +968,15 @@ sjf (void)
           }
         }else{
           thread_create_time(string_result, 0, createCPUBounded, NULL, time);    
-        }                    
+        }
+                          
     }
 }
 
 static void
 createIOBounded (void *aux UNUSED)
 {
-  printf("\nTipo: i/o bound\n");    
+  printf("\nTipo: i/o bound");    
   //-------------createIOBounded-------------
   int a[5] = {2423434, 2242342, 34234545, 423432, 5234234};
   int *p ;
@@ -900,7 +992,7 @@ createIOBounded (void *aux UNUSED)
 static void
 createCPUBounded (void *aux UNUSED)
 {  
-  printf("\nTipo: cpu bound\n");
+  printf("\nTipo: cpu bound");
   //-------------createCPUBounded-------------
   int suma = 5;
   for(int i = 0; i< 100; i++){
@@ -944,11 +1036,12 @@ queue()
 
 static void
 threads (void *aux UNUSED){
-    printf ("\nHilo: %s\t", thread_name());
+    printf ("\t\tHilo: %s\t", thread_name());
     printf ("\nPID: %d\t", thread_tid());
     printf ("Prioridad: %d\t", thread_get_priority());   //prioridad en el algoritmo cola
     printf ("Tiempo: %d\t", thread_get_executionTime());
-
+    printf("TimeWait: %d\t",thread_get_waitingTime());
+    printf("TimeWaitAvg: %d\t",timeAvgTotal);
 
     printf ("Hilos restantes: %i\n\n", list_size(&ready_list));
 

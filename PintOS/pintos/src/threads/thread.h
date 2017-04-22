@@ -104,6 +104,10 @@ struct thread
     /* Tiempo de duracion */
     int executionTime;
 
+    /* Tiempo de espera */
+    int waitingTime;
+
+
 };
 
 /* If false (default), use round-robin scheduler.
@@ -169,5 +173,8 @@ tid_t thread_create_time (const char *name, int priority, thread_func *, void *,
 
 /* Queue Threads */
 tid_t thread_create_queue (const char *name, int priority, thread_func *, void *);
+
+/* fcfs Threads */
+tid_t thread_create_fcfs(const char *name, int priority, thread_func *, void *,int time);
 
 #endif /* threads/thread.h */
