@@ -496,8 +496,8 @@ thread_unblock_queue(struct thread *t)
 		  	// printf("primer elemento");
 	  	}else{
 		  	struct thread *temporal = list_entry (list_prev(&t->elem), struct thread, elem);		//me retorna el thread perteneciente al elem correspondiente.
-		  	t->waitingTime = temporal->executionTime + temporal->waitingTime;
-		  	timeAvgTotal = (t->waitingTime)/numThreads +timeAvgTotal;
+		  	 t->waitingTime = temporal->executionTime + temporal->waitingTime;
+  	 			sumTotalTimesWaiting = (t->waitingTime)+sumTotalTimesWaiting; 
   		}
     }
 
@@ -1136,12 +1136,17 @@ queue()
  //            typeThread = 1;         //cpu bound
  //          }
  //        }else if(typeThread==1){
-        // 	thread_create_queue(string_result, priority, createCPUBounded, NULL,time);
-        // }else{
+ //        	thread_create_queue(string_result, priority, createCPUBounded, NULL,time);
+ //        }else{
  //        	thread_create_queue(string_result, priority, createCPUBounded, NULL,time[i]);
  //        }  
  //    }
     ///////////////
+
+    /////para pruebas comentar el for e introduccir el codigo del final del archivo.
+    timeAvgTotal = sumTotalTimesWaiting/numThreads;
+    printf("\t\t\t\t   TimeWaitAvg: %d\n",timeAvgTotal);
+    printf("Total de threads: %d\n\n",numThreads);
 
 
 }
