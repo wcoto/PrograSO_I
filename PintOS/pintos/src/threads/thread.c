@@ -1089,7 +1089,7 @@ queue()
     	int time = 1 + (int) random_ulong() % 10;
         time = (time > 0) ? time : time * -1;
 
-    	printf ("\nHilos en la lista: %i\n\n", list_size(&ready_list));
+    	// printf ("\nHilos en la lista: %i\n\n", list_size(&ready_list));
         int priority = PRI_DEFAULT + (int) random_ulong() % numThreads;
 
         printf("prioridad: %d\n", priority);

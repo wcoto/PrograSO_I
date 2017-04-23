@@ -1,0 +1,67 @@
+            +----------------------------------------------------+
+			|        Principios de Sistemas Operativos           |
+			|                    I semestre, 2017                |
+			|   Documento de Diseño, Primer proyecto programado  |
+			+----------------------------------------------------+
+				   
+---- GRUPO ----
+
+Wagner Coto <wagner.coto.m@gmail.com>
+Gilberth Obando <gilobaqu@gmail.com>
+
+Calendarizador <First Come, First Serve>
+=======================================
+
+---- Estructuras de datos ----
+
+>> Copie la declaracion de cada estructura nueva utilizada por su 
+codigo, variables globales o estaticas, `struct', `typedef', etc.
+
+extern int scheduler_type;
+
+struct (thread): int execution_time;
+
+>> Explique las estructuras citadas anteriormente en menos de 30 
+palabras cada una.
+
+scheduler_type: esta variable permite indicar el tipo de calendarizador elegido
+			    por el usuario.
+
+execution_time: se agrega este tipo de dato al struct, que permite tener el 
+		        promedio del historico del tiempo de ejecucion del cada hilo
+
+---- ALGORITMOS ----
+
+>> Explique en prosa el funcionamiento de su algoritmo, utilizando 
+el nombre de las variables utilizadas y funciones.
+
+Basicamente se tiene una estructura de datos tipo cola, en la cual se van
+agregando los hilos cada vez que se van creando uno continuo del otro. Sin 
+embargo, cuando se realiza la ejecucion de los mismos, siempre se obtiene el que
+se encuentra de primero de manera que se ejecuta segun el algoritmo de primero 
+en entrar, primero en salir indicado en el scheduler_type=colas.
+---- SYNC ----
+
+>>Describa como existe una condicion de carrera en
+thread_set_priority() y explique como su algoritmo lo resuelve. 
+Justifique por que un lock podria o no podria funcionar para este 
+algoritmo
+
+En caso que se establezca una prioridad para cada hilo, el algoritmo no toma
+en cuenta dicho dato para hacer la calendarizacion, ya que tanto en el momento de 
+insercion en la cola como cuando se extrae de la misma, se siguen las reglas antes
+mencionadas (insercion al final y extraccion al inicio).
+
+---- JUSTIFICACION ----
+>>Describa la razon por la que se decidio implementar este diseño 
+y en que maneras es superior a otras soluciones que consideraron.
+
+Este diseno se implemento de esta manera ya que es relativamente sencillo de entender y programar debido a su baja complejidad y se aprovecha el uso de las estructuras y funciones que provee PintOS para el manejo de hilos de manera dinamica, ya que otra solucion planteada fue el uso de arreglos estaticos los cuales tuvieran tamanos y posiciones fijas en la memoria; sin embargo se considero que esto no era eficiente debido a que los hilos pueden crecer de manera dinamica lo cual provoca que se desborde el arreglo y no se puedan agregar mas hilos, a menos que se pueda crear una estructura mas grande y luego hacer el movimiento de todos los hilos.
+
+>>Realize una corta critica, positiva o negativa, sobre su 
+algoritmo y describa como los cambios de contexto en este 
+calendarizador y las reglas y politicas implementadas afectan el 
+desempeño del procesador.
+
+
+___________________________________________________________________
