@@ -1,0 +1,63 @@
+            +----------------------------------------------------+
+			|        Principios de Sistemas Operativos           |
+			|                    I semestre, 2017                |
+			|   Documento de Diseño, Primer proyecto programado  |
+			+----------------------------------------------------+
+				   
+---- GRUPO ----
+
+Wagner Coto <wagner.coto.m@gmail.com>
+Gilberth Obando <gilobaqu@gmail.com>
+
+Calendarizador <SHORT JOB FIRST>
+=======================================
+
+---- Estructuras de datos ----
+
+>> Copie la declaracion de cada estructura nueva utilizada por su 
+codigo, variables globales o estaticas, `struct', `typedef', etc.
+
+extern int scheduler_type;
+
+struct (thread): int execution_time;
+
+>> Explique las estructuras citadas anteriormente en menos de 30 
+palabras cada una.
+
+scheduler_type: esta variable permite indicar el tipo de calendarizador elegido
+			    por el usuario.
+
+execution_time: se agrega este tipo de dato al struct, que permite tener el 
+		        promedio del historico del tiempo de ejecucion del cada hilo
+
+---- ALGORITMOS ----
+
+>> Explique en prosa el funcionamiento de su algoritmo, utilizando 
+el nombre de las variables utilizadas y funciones.
+
+Basicamente se tiene una estructura de datos tipo lista simple ordenada, la cual recibe como parametro de ordenamiento el execution_time, el cual es propio de cada hilo y en el momento de insercion a la lista o bien, cuando esta se desbloquea, se realiza el ordenamiento para colocar el hilo en la posicion correspondiente de manera que queden los de menor tiempo en posiciones inferiores y los que requieren mayor tiempo en posiciones superiores. Lo anterior se hace con el fin de que siempre que se va ejecutar un proceso, se tome el primero de la lista, asi se garantiza que al estar ordenada siempre se va obtener el de menor tiempo en ejecutarse al inicio.
+
+---- SYNC ----
+
+>>Describa como existe una condicion de carrera en
+thread_set_priority() y explique como su algoritmo lo resuelve. 
+Justifique por que un lock podria o no podria funcionar para este 
+algoritmo
+
+En caso que se establezca una prioridad para cada hilo, el algoritmo no toma
+en cuenta dicho dato para hacer la calendarizacion, ya que tanto en el momento de 
+insercion en la lista, cambia al estado de 'ready' o cuando se extrae de la misma, se siguen las reglas antes mencionadas (insercion al final y extraccion al inicio) tomando en cuenta el tiempo de ejecucion del mismo y no la prioridad que tenga el hilo de ejecucion.
+
+---- JUSTIFICACION ----
+>>Describa la razon por la que se decidio implementar este diseño 
+y en que maneras es superior a otras soluciones que consideraron.
+
+Otra posible solucion a este algoritmo, tener todos los procesos ordenados segun se insertan o se crean en la lista, y realizar la seleccion de ejecucion en el momento que se va a ejecutar un hilo y recorrer toda la lista en busca del que tiene menor tiempo de ejecucion, sin embargo se considero que esto no era una solucion agradable por el hecho que requiere realizar una busqueda sobre todos los elementos y analizar cual posee el menor tiempo de ejecucion, lo cual incrementaria consierablemente el tiempo de ejecucion. Creemos que la solucion aportada es mas optima que la anterior ya que se mantiene la lista ordenada en todo momento, y no es necesario (en el mejor de los casos) recorrer toda la estructura para obtener el de menor tiempo de ejecucion, sino que esto se hace en el momento de insercion que se compara y cuando se encuentra la posicion simplemente termina el algoritmo y no requiere recorrer el resto de la estructura.
+
+>>Realize una corta critica, positiva o negativa, sobre su 
+algoritmo y describa como los cambios de contexto en este 
+calendarizador y las reglas y politicas implementadas afectan el 
+desempeño del procesador.
+
+El desempeno se puede ver afectado segun el tipo de hilo que se ejecute, ya que en caso de un I/O bounded el algoritmo espera hasta que este se termine de ejecutar y no 'le quita' el procesador al proceso para asignarlo a otro mientras se resuelve el evento externo. El desempeno ademas se puede ver afectado en el caso que se tenga una lista muy grande de procesos, y se desee ingresar un proceso con alto tiempo de ejecucion, por lo que se debe ejecutar el algoritmo de recorrido sobre todos los elementos hasta encontrar la posicion indicada.
+___________________________________________________________________

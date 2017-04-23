@@ -9,7 +9,7 @@
 Wagner Coto <wagner.coto.m@gmail.com>
 Gilberth Obando <gilobaqu@gmail.com>
 
-Calendarizador <First Come, First Serve>
+Calendarizador <MULTILEVEL QUEUE>
 =======================================
 
 ---- Estructuras de datos ----
@@ -35,11 +35,8 @@ execution_time: se agrega este tipo de dato al struct, que permite tener el
 >> Explique en prosa el funcionamiento de su algoritmo, utilizando 
 el nombre de las variables utilizadas y funciones.
 
-Basicamente se tiene una estructura de datos tipo cola, en la cual se van
-agregando los hilos cada vez que se van creando uno continuo del otro. Sin 
-embargo, cuando se realiza la ejecucion de los mismos, siempre se obtiene el que
-se encuentra de primero de manera que se ejecuta segun el algoritmo de primero 
-en entrar, primero en salir indicado en el scheduler_type=colas.
+Se disenan dos estructuras de datos tipo colas, las cuales van a ser los dos tipos de estructuras de datos a utilizar 
+
 ---- SYNC ----
 
 >>Describa como existe una condicion de carrera en
@@ -49,19 +46,18 @@ algoritmo
 
 En caso que se establezca una prioridad para cada hilo, el algoritmo no toma
 en cuenta dicho dato para hacer la calendarizacion, ya que tanto en el momento de 
-insercion en la cola como cuando se extrae de la misma, se siguen las reglas antes
-mencionadas (insercion al final y extraccion al inicio).
+insercion en la lista, cambia al estado de 'ready' o cuando se extrae de la misma, se siguen las reglas antes mencionadas (insercion al final y extraccion al inicio) tomando en cuenta el tiempo de ejecucion del mismo y no la prioridad que tenga el hilo de ejecucion.
 
 ---- JUSTIFICACION ----
 >>Describa la razon por la que se decidio implementar este diseño 
 y en que maneras es superior a otras soluciones que consideraron.
 
-Este diseno se implemento de esta manera ya que es relativamente sencillo de entender y programar debido a su baja complejidad y se aprovecha el uso de las estructuras y funciones que provee PintOS para el manejo de hilos de manera dinamica, ya que otra solucion planteada fue el uso de arreglos estaticos los cuales tuvieran tamanos y posiciones fijas en la memoria; sin embargo se considero que esto no era eficiente debido a que los hilos pueden crecer de manera dinamica lo cual provoca que se desborde el arreglo y no se puedan agregar mas hilos, a menos que se pueda crear una estructura mas grande y luego hacer el movimiento de todos los hilos.
+Otra posible solucion a este algoritmo, tener todos los procesos ordenados segun se insertan o se crean en la lista, y realizar la seleccion de ejecucion en el momento que se va a ejecutar un hilo y recorrer toda la lista en busca del que tiene menor tiempo de ejecucion, sin embargo se considero que esto no era una solucion agradable por el hecho que requiere realizar una busqueda sobre todos los elementos y analizar cual posee el menor tiempo de ejecucion, lo cual incrementaria consierablemente el tiempo de ejecucion. Creemos que la solucion aportada es mas optima que la anterior ya que se mantiene la lista ordenada en todo momento, y no es necesario (en el mejor de los casos) recorrer toda la estructura para obtener el de menor tiempo de ejecucion, sino que esto se hace en el momento de insercion que se compara y cuando se encuentra la posicion simplemente termina el algoritmo y no requiere recorrer el resto de la estructura.
 
 >>Realize una corta critica, positiva o negativa, sobre su 
 algoritmo y describa como los cambios de contexto en este 
 calendarizador y las reglas y politicas implementadas afectan el 
 desempeño del procesador.
 
-El desempeno se puede ver afectado segun el tipo de hilo que se ejecute, ya que en caso de un I/O bounded el algoritmo espera hasta que este se termine de ejecutar y no 'le quita' el procesador al proceso para asignarlo a otro mientras se resuelve el evento externo.
+El desempeno se puede ver afectado segun el tipo de hilo que se ejecute, ya que en caso de un I/O bounded el algoritmo espera hasta que este se termine de ejecutar y no 'le quita' el procesador al proceso para asignarlo a otro mientras se resuelve el evento externo. El desempeno ademas se puede ver afectado en el caso que se tenga una lista muy grande de procesos, y se desee ingresar un proceso con alto tiempo de ejecucion, por lo que se debe ejecutar el algoritmo de recorrido sobre todos los elementos hasta encontrar la posicion indicada.
 ___________________________________________________________________
